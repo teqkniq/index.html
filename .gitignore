@@ -1,0 +1,14 @@
+# Compiled source #
+/dist
+/build
+/*.js
+/*.css
+
+# Logs #
+logs
+*.log
+npm-debug.log*
+
+# Dependency directories #
+node_modules/
+/bower_components/
