@@ -2845,7 +2845,24 @@ function updateCombatUI() {
 
             if(isTarget) borderClass += ' enemy-target';
 
-            card.className = `enemy-card bg-gray-800 p-1.5 rounded-lg cursor-pointer flex flex-col items-center overflow-hidden w-[64px] ${borderClass} ${isDead ? 'enemy-dead' : ''}`;
+            // Dynamic grid placement and sizing based on enemy count
+            let avatarSizeClass, nameSizeClass, bossLabelSizeClass;
+            if (enemies.length === 1) {
+                avatarSizeClass = 'text-6xl'; nameSizeClass = 'text-base'; bossLabelSizeClass = 'text-sm';
+                card.style.gridColumn = '1 / -1'; card.style.gridRow = '1 / -1';
+            } else if (enemies.length === 2) {
+                avatarSizeClass = 'text-4xl'; nameSizeClass = 'text-xs'; bossLabelSizeClass = 'text-[9px]';
+                card.style.gridColumn = idx === 0 ? '1' : '2'; card.style.gridRow = '1 / -1';
+            } else if (enemies.length === 3) {
+                avatarSizeClass = 'text-3xl'; nameSizeClass = 'text-[10px]'; bossLabelSizeClass = 'text-[8px]';
+                if (idx === 0) { card.style.gridColumn = '1'; card.style.gridRow = '1'; }
+                else if (idx === 1) { card.style.gridColumn = '2'; card.style.gridRow = '1'; }
+                else { card.style.gridColumn = '1 / -1'; card.style.gridRow = '2'; }
+            } else {
+                avatarSizeClass = 'text-2xl'; nameSizeClass = 'text-[9px]'; bossLabelSizeClass = 'text-[8px]';
+            }
+
+            card.className = `enemy-card bg-gray-800 p-1.5 rounded-lg cursor-pointer flex flex-col items-center overflow-hidden ${borderClass} ${isDead ? 'enemy-dead' : ''}`;
             card.onclick = () => selectTarget(idx);
             
             let eStatus = '';
@@ -2860,11 +2877,11 @@ function updateCombatUI() {
 
             let bossLabel = '';
             if (e.isMythicBoss) {
-                bossLabel = `<div class="text-[8px] font-black text-white bg-gradient-to-r from-purple-600 to-pink-500 px-1.5 py-0.5 rounded-full shadow-lg mt-0.5 inline-block">✨ MYTHIC BOSS</div>`;
+                bossLabel = `<div class="${bossLabelSizeClass} font-black text-white bg-gradient-to-r from-purple-600 to-pink-500 px-1.5 py-0.5 rounded-full shadow-lg mt-0.5 inline-block">✨ MYTHIC BOSS</div>`;
             } else if (e.isBoss) {
-                bossLabel = `<div class="text-[8px] font-black text-yellow-200 bg-red-700 px-1.5 py-0.5 rounded-full shadow-lg mt-0.5 inline-block">👑 Boss</div>`;
+                bossLabel = `<div class="${bossLabelSizeClass} font-black text-yellow-200 bg-red-700 px-1.5 py-0.5 rounded-full shadow-lg mt-0.5 inline-block">👑 Boss</div>`;
             }
-            card.innerHTML = `<div class="relative w-full text-center"><div class="absolute -top-1 -right-2 text-sm flex gap-1">${eStatus}</div><div class="text-2xl mb-1 mt-1 ${animClass}">${e.avatar}</div></div>${bossLabel}<div class="text-[9px] font-bold truncate w-full text-center ${rarityColor}">Lv.${e.lvl} ${e.name}</div><div class="health-bar-container !h-1.5 !mt-1"><div class="health-bar" style="width: ${(Math.max(0, e.currentHp) / e.maxHp) * 100}%"></div></div>${isDead ? '<div class="enemy-death-overlay">💀</div>' : ''}`;
+            card.innerHTML = `<div class="relative w-full text-center"><div class="absolute -top-1 -right-2 text-sm flex gap-1">${eStatus}</div><div class="${avatarSizeClass} mb-1 mt-1 ${animClass}">${e.avatar}</div></div>${bossLabel}<div class="${nameSizeClass} font-bold truncate w-full text-center ${rarityColor}">Lv.${e.lvl} ${e.name}</div><div class="health-bar-container !h-1.5 !mt-1"><div class="health-bar" style="width: ${(Math.max(0, e.currentHp) / e.maxHp) * 100}%"></div></div>${isDead ? '<div class="enemy-death-overlay">💀</div>' : ''}`;
             eContainer.appendChild(card);
         });
         // Show Next Battle button when all enemies are dead and combat still active
