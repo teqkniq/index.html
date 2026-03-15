@@ -5,7 +5,7 @@ let activeOscillators = [];
 // --- GENDER AVATARS PER CLASS ---
 const CLASS_GENDER_AVATARS = {
     warrior: { male: '🤺', female: '💂‍♀️' },
-    mage:    { male: '🧙‍♂️', female: 'images/female-mage.png' },
+    mage:    { male: '🧙‍♂️', female: '🧙‍♀️' },
     paladin: { male: '🛡️', female: '⚔️' },
     ninja:   { male: '🥷', female: '🥷' },
     cleric:  { male: '🧑‍⚕️', female: '👩‍⚕️' },
