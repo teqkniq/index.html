@@ -158,30 +158,29 @@ const CLASSES = {
         name: 'Warrior', icon: '⚔️', avatar: '🤺', baseHp: 50, baseDmg: 10,
         skills: [
             { name: 'Slash', type: 'attack', mult: 1, cd: 0, color: 'bg-gray-700', desc: 'Base damage' },
-            { name: 'Cleave', type: 'attack', mult: 1, effect: { bleed: true, turns: 5 }, cd: 5, color: 'bg-red-700', desc: 'Dmg + 1% Max HP Bleed (5t)' },
-            { name: 'Ruthless Bash', type: 'attack', mult: 1.05, effect: { bleed: true, turns: 5, chance: 0.50 }, cd: 7, color: 'bg-orange-700', desc: 'Base dmg + 5%, 50% bleed chance' },
-            { name: 'Weapon Throw', type: 'attack', mult: 1, effect: { bleed: true, turns: 5 }, cd: 5, color: 'bg-stone-600', desc: 'Dmg + Bleed stack' },
-            { name: 'Whirlwind', type: 'attack', mult: 0.33, hits: 3, effect: { defDown: 0.01, bleed: true, turns: 5 }, cd: 6, color: 'bg-gray-600', desc: '3x hits, reduce def 1%, +1 bleed stack' },
-            { name: 'Knockout', type: 'attack', mult: 1.02, effect: { defDown: 0.03 }, self_effect: { defUp: 0.05, turns: 3 }, cd: 6, color: 'bg-yellow-700', desc: 'Dmg + 2%, reduce enemy def 3%, +5% self def' },
-            { name: 'Stomp', type: 'attack', mult: 1, effect: { healBlock: 1 }, self_effect: { healPct: 0.05 }, cd: 7, color: 'bg-stone-800', desc: 'Dmg, Heal block 1t, +5% Self-Heal' },
+            { name: 'Cleave', type: 'attack', mult: 1, effect: { bleed: true, turns: 5 }, cd: 5, color: 'bg-green-700', desc: 'Base damage + 1% Max HP Bleed (5t)' },
+            { name: 'Ruthless Bash', type: 'attack', mult: 1.05, effect: { bleed: true, turns: 5, chance: 0.50 }, cd: 7, color: 'bg-purple-700', desc: 'Base damage + 5%, 50% bleed chance' },
+            { name: 'Weapon Throw', type: 'attack', mult: 1, effect: { bleed: true, turns: 5 }, cd: 5, color: 'bg-orange-700', desc: 'Base damage + Bleed stack' },
+            { name: 'Whirlwind', type: 'attack', mult: 0.33, hits: 3, effect: { defDown: 0.01, bleed: true, turns: 5 }, cd: 6, color: 'bg-red-700', desc: '3x hits, reduce def 1%, +1 bleed stack' },
+            { name: 'Knockout', type: 'attack', mult: 1.02, effect: { defDown: 0.03 }, self_effect: { defUp: 0.05, turns: 3 }, cd: 6, color: 'bg-yellow-700', desc: 'Base damage + 2%, reduce enemy def 3%, +5% self def' },
+            { name: 'Stomp', type: 'attack', mult: 1, effect: { healBlock: 1 }, self_effect: { healPct: 0.05 }, cd: 7, color: 'bg-stone-800', desc: 'Base damage, Heal block 1t, +5% Self-Heal' },
             { name: 'Soul Remover', type: 'attack', mult: 1, hits: 3, target: 'random', self_effect: { defDown: 0.15, turns: 2 }, cd: 8, color: 'bg-purple-800', desc: '3x random hits. -15% self def (2t)' },
-            { name: 'Eruption', type: 'buff', mult: 0, self_effect: { regenPct: 0.20, turns: 2, dmgUp: 0.03, dmgUpTurns: 3 }, cd: 10, color: 'bg-red-600', desc: 'Regen 20% HP/t (2t), +3% Dmg (3t)' },
-            { name: 'Def Up', type: 'buff', mult: 0, self_effect: { defUp: 0.50, turns: 3, blockHit: true, blockChance: 0.50, blockTurns: 3 }, cd: 8, color: 'bg-blue-700', desc: '+50% Def (3t), 50% block hit (3t)' }
+            { name: 'Eruption', type: 'buff', mult: 0, self_effect: { regenPct: 0.20, turns: 4, dmgUp: 0.40, dmgUpTurns: 4, defUp: 0.20, defUpTurns: 4 }, cd: 10, color: 'bg-red-600', desc: 'Regen 20% HP/t (4t), +40% Base damage (4t), +20% Def (4t)' }
         ]
     },
     mage: {
         name: 'Mage', icon: '🪄', avatar: '🧙‍♂️', baseHp: 35, baseDmg: 25,
         skills: [
-            { name: 'Blast', type: 'attack', mult: 1, cd: 0, color: 'bg-blue-700', desc: 'Base damage' },
-            { name: 'Fireball', type: 'attack', mult: 1.02, cd: 4, color: 'bg-red-600', desc: 'Base dmg + 2%' },
-            { name: 'Ice Shower', type: 'attack', mult: 0.34, hits: 3, target: 'all', cd: 6, color: 'bg-cyan-600', desc: '3x 34% dmg to ALL' },
+            { name: 'Blast', type: 'attack', mult: 1, cd: 0, color: 'bg-gray-700', desc: 'Base damage' },
+            { name: 'Fireball', type: 'attack', mult: 1.02, cd: 4, color: 'bg-green-700', desc: 'Base damage + 2%' },
+            { name: 'Ice Shower', type: 'attack', mult: 0.34, hits: 3, target: 'all', cd: 6, color: 'bg-purple-700', desc: '3x 34% Base damage to ALL' },
             // Fire Path Skills (Indices 3, 4, 5)
-            { name: 'FireLazer', type: 'attack', mult: 1.03, effect: { defDown: 0.05, turns: 3 }, cd: 5, color: 'bg-orange-600', desc: 'Base + 3%, -5% Def (3t)' },
-            { name: 'Fire Shield', type: 'buff', mult: 0, self_effect: { fireShield: true, turns: 3 }, cd: 5, color: 'bg-red-500', desc: 'Reflect 1% dmg & burn attackers' },
-            { name: 'Meteor Blast', type: 'attack', mult: 1.15, hits: 2, cd: 8, color: 'bg-orange-800', desc: '2x hits of Base + 15% dmg' },
+            { name: 'FireLazer', type: 'attack', mult: 1.03, effect: { defDown: 0.05, turns: 3 }, cd: 5, color: 'bg-orange-700', desc: 'Base damage + 3%, -5% Def (3t)' },
+            { name: 'Fire Shield', type: 'buff', mult: 0, self_effect: { fireShield: true, turns: 3 }, cd: 5, color: 'bg-red-700', desc: 'Reflect 1% Base damage & burn attackers' },
+            { name: 'Meteor Blast', type: 'attack', mult: 1.15, hits: 2, cd: 8, color: 'bg-orange-800', desc: '2x hits of Base damage + 15%' },
             // Ice Path Skills (Indices 6, 7, 8)
-            { name: 'Ice Spike', type: 'attack', mult: 1.05, effect: { stunChance: 0.20 }, cd: 5, color: 'bg-blue-400', desc: 'Base + 5%, 20% chance to stun' },
-            { name: 'Ice Shield', type: 'buff', mult: 0, self_effect: { iceShield: true, turns: 3 }, cd: 5, color: 'bg-cyan-500', desc: '-50% dmg taken (3t)' },
+            { name: 'Ice Spike', type: 'attack', mult: 1.05, effect: { stunChance: 0.20 }, cd: 5, color: 'bg-blue-400', desc: 'Base damage + 5%, 20% chance to stun' },
+            { name: 'Ice Shield', type: 'buff', mult: 0, self_effect: { iceShield: true, turns: 3 }, cd: 5, color: 'bg-cyan-500', desc: '-50% Base damage taken (3t)' },
             { name: 'Ice Fists', type: 'attack', special: 'hpPctDmg', hpPctDmg: 0.30, cd: 6, color: 'bg-blue-600', desc: 'Deals 30% of target HP' }
         ]
     },
@@ -189,56 +188,56 @@ const CLASSES = {
         name: 'Paladin', icon: '🔨', avatar: '🛡️', baseHp: 60, baseDmg: 15,
         skills: [
             { name: 'Strike', type: 'attack', mult: 1, cd: 0, color: 'bg-gray-700', desc: 'Base damage' },
-            { name: 'Iron Shield', type: 'buff', mult: 0, self_effect: { reflect: 0.50, reflectTurns: 1, regenPct: 0.10, turns: 2 }, cd: 5, color: 'bg-gray-500', desc: 'Reflect 50% dmg (1t), Heal 10% HP/t (2t)' },
-            { name: 'Swinging Hammer', type: 'attack', mult: 1.05, effect: { stunChance: 1.0 }, cd: 8, color: 'bg-yellow-600', desc: '+5% dmg, stun 1t' },
-            { name: 'Thirsty', type: 'buff', mult: 0, self_effect: { healPct: 0.30, defUp: 0.30, turns: 2, reflect: 0.60, reflectTurns: 1 }, cd: 8, color: 'bg-green-700', desc: 'Heal 30%, +30% Def (2t), Reflect 60% (1t)' },
-            { name: 'Shield Explosion', type: 'buff', mult: 0, self_effect: { doubleDamageTaken: true, reflect: 1.00, reflectTurns: 1, turns: 1 }, cd: 7, color: 'bg-red-800', desc: 'Take 2x dmg, Reflect 100% dmg taken (1t)' },
-            { name: 'Hammered', type: 'attack', mult: 2, target: 'all', cd: 6, color: 'bg-orange-600', desc: '2x base dmg to ALL enemies' },
-            { name: 'Dash Charge', type: 'attack', mult: 1.05, self_effect: { dodgeTurns: 2 }, cd: 7, color: 'bg-cyan-700', desc: '+5% dmg, dodge 2t' },
-            { name: 'Overhead Hit', type: 'attack', mult: 1, effect: { stunChance: 1.0 }, cd: 7, color: 'bg-stone-700', desc: 'Base dmg, stun 1t' },
-            { name: 'Lose Control', type: 'attack', mult: 1.02, self_effect: { healPct: 0.30, reflect: 2.00, reflectTurns: 1 }, cd: 10, color: 'bg-purple-800', desc: '+2% dmg, Heal 30%, Reflect 200% (1t)' }
+            { name: 'Iron Shield', type: 'buff', mult: 0, self_effect: { reflect: 0.50, reflectTurns: 1, regenPct: 0.10, turns: 2 }, cd: 5, color: 'bg-green-700', desc: 'Reflect 50% Base damage (1t), Heal 10% HP/t (2t)' },
+            { name: 'Swinging Hammer', type: 'attack', mult: 1.05, effect: { stunChance: 1.0 }, cd: 8, color: 'bg-purple-700', desc: '+5% Base damage, stun 1t' },
+            { name: 'Thirsty', type: 'buff', mult: 0, self_effect: { healPct: 0.30, defUp: 0.30, turns: 2, reflect: 0.60, reflectTurns: 1 }, cd: 8, color: 'bg-orange-700', desc: 'Heal 30%, +30% Def (2t), Reflect 60% (1t)' },
+            { name: 'Shield Explosion', type: 'buff', mult: 0, self_effect: { doubleDamageTaken: true, reflect: 1.00, reflectTurns: 1, turns: 1 }, cd: 7, color: 'bg-red-700', desc: 'Take 2x Base damage, Reflect 100% Base damage taken (1t)' },
+            { name: 'Hammered', type: 'attack', mult: 2, target: 'all', cd: 6, color: 'bg-orange-600', desc: '2x Base damage to ALL enemies' },
+            { name: 'Dash Charge', type: 'attack', mult: 1.05, self_effect: { dodgeTurns: 2 }, cd: 7, color: 'bg-cyan-700', desc: '+5% Base damage, dodge 2t' },
+            { name: 'Overhead Hit', type: 'attack', mult: 1, effect: { stunChance: 1.0 }, cd: 7, color: 'bg-stone-700', desc: 'Base damage, stun 1t' },
+            { name: 'Lose Control', type: 'attack', mult: 1.02, self_effect: { healPct: 0.30, reflect: 2.00, reflectTurns: 1 }, cd: 10, color: 'bg-purple-800', desc: '+2% Base damage, Heal 30%, Reflect 200% (1t)' }
         ]
     },
     ninja: {
         name: 'Ninja', icon: '🌟', avatar: '🥷', baseHp: 30, baseDmg: 30,
         skills: [
-            { name: 'Shuriken Hit', type: 'attack', mult: 1, cd: 0, color: 'bg-gray-600', desc: 'Base damage' },
-            { name: 'Face Kick', type: 'attack', mult: 1.06, cd: 5, color: 'bg-orange-500', desc: '+6% dmg' },
-            { name: 'Throw', type: 'attack', mult: 1.01, effect: { stunChance: 1.0 }, cd: 8, color: 'bg-yellow-500', desc: '+1% dmg, stun 1t' },
-            { name: 'Poison Shuriken', type: 'attack', mult: 1.03, effect: { poison: true, poisonTurns: 2 }, cd: 6, color: 'bg-green-600', desc: '+3% dmg, Poison (2t)' },
-            { name: 'Shuriken Rain', type: 'attack', mult: 1.10, target: 'all', effect: { poison: true, poisonTurns: 2 }, cd: 9, color: 'bg-green-800', desc: '+10% dmg to ALL, Poison all' },
-            { name: 'Backhand Slap', type: 'attack', mult: 1.01, effect: { stunChance: 1.0, stunTurns: 3, defDown: 0.10 }, cd: 11, color: 'bg-red-700', desc: '+1% dmg, stun 3t, -10% def' },
+            { name: 'Shuriken Hit', type: 'attack', mult: 1, cd: 0, color: 'bg-gray-700', desc: 'Base damage' },
+            { name: 'Face Kick', type: 'attack', mult: 1.06, cd: 5, color: 'bg-green-700', desc: '+6% Base damage' },
+            { name: 'Throw', type: 'attack', mult: 1.01, effect: { stunChance: 1.0 }, cd: 8, color: 'bg-purple-700', desc: '+1% Base damage, stun 1t' },
+            { name: 'Poison Shuriken', type: 'attack', mult: 1.03, effect: { poison: true, poisonTurns: 2 }, cd: 6, color: 'bg-orange-700', desc: '+3% Base damage, Poison (2t)' },
+            { name: 'Shuriken Rain', type: 'attack', mult: 1.10, target: 'all', effect: { poison: true, poisonTurns: 2 }, cd: 9, color: 'bg-red-700', desc: '+10% Base damage to ALL, Poison all' },
+            { name: 'Backhand Slap', type: 'attack', mult: 1.01, effect: { stunChance: 1.0, stunTurns: 3, defDown: 0.10 }, cd: 11, color: 'bg-red-700', desc: '+1% Base damage, stun 3t, -10% def' },
             { name: 'Smoke Bomb', type: 'buff', mult: 0, special: 'smokeBomb', cd: 9, color: 'bg-gray-500', desc: 'Dodge 3t, Poison & dmg all enemies' },
-            { name: 'Huge Shuriken', type: 'attack', mult: 1.50, cd: 8, color: 'bg-yellow-400', desc: '+50% dmg' },
-            { name: 'Kunai Swarm', type: 'attack', mult: 0.10, hits: 9, target: 'random', effect: { poison: true, poisonTurns: 3, poisonStacks: 1 }, self_effect: { dmgBuff: 0.10, turns: 3 }, cd: 10, color: 'bg-purple-600', desc: '9x 10% dmg hits, +1 Poison stack, +10% dmg to poisoned (3t)' }
+            { name: 'Huge Shuriken', type: 'attack', mult: 1.50, cd: 8, color: 'bg-yellow-400', desc: '+50% Base damage' },
+            { name: 'Kunai Swarm', type: 'attack', mult: 0.10, hits: 9, target: 'random', effect: { poison: true, poisonTurns: 3, poisonStacks: 1 }, self_effect: { dmgBuff: 0.10, turns: 3 }, cd: 10, color: 'bg-purple-600', desc: '9x 10% Base damage hits, +1 Poison stack, +10% Base damage to poisoned (3t)' }
         ]
     },
     cleric: {
         name: 'Cleric', icon: '⛪', avatar: '⛪', baseHp: 25, baseDmg: 10,
         skills: [
-            { name: 'Hug', type: 'attack', mult: 1, cd: 0, color: 'bg-pink-700', desc: 'Deal base damage' },
-            { name: 'Deadly Kiss', type: 'attack', mult: 1.01, cd: 5, color: 'bg-pink-500', desc: 'Base +1% dmg, heal 2% life', self_effect: { healPct: 0.02 } },
-            { name: 'Dizzy', type: 'attack', mult: 1.05, cd: 7, color: 'bg-purple-500', desc: 'Base +5%, heal buff 10% (5t), 2 poison', effect: { poisonStacks: 2, poisonTurns: 5 }, self_effect: { healingBuff: 0.10, turns: 5 } },
-            { name: 'Heal', type: 'heal', mult: 0, cd: 10, color: 'bg-green-500', desc: 'Full HP heal, +10% dmg', self_effect: { fullHeal: true, dmgBuff: 0.10, turns: 999 } },
-            { name: 'Mud', type: 'debuff', mult: 0, cd: 10, color: 'bg-yellow-800', desc: '50% skip (3t), +30% dmg taken', effect: { skipChance: 0.50, skipTurns: 3, dmgTaken: 0.30, dmgTakenTurns: 3 } },
+            { name: 'Hug', type: 'attack', mult: 1, cd: 0, color: 'bg-gray-700', desc: 'Base damage' },
+            { name: 'Deadly Kiss', type: 'attack', mult: 1.01, cd: 5, color: 'bg-green-700', desc: 'Base damage +1%, heal 2% life', self_effect: { healPct: 0.02 } },
+            { name: 'Dizzy', type: 'attack', mult: 1.05, cd: 7, color: 'bg-purple-700', desc: 'Base damage +5%, heal buff 10% (5t), 2 poison', effect: { poisonStacks: 2, poisonTurns: 5 }, self_effect: { healingBuff: 0.10, turns: 5 } },
+            { name: 'Heal', type: 'heal', mult: 0, cd: 10, color: 'bg-orange-700', desc: 'Full HP heal, +10% Base damage', self_effect: { fullHeal: true, dmgBuff: 0.10, turns: 999 } },
+            { name: 'Mud', type: 'debuff', mult: 0, cd: 10, color: 'bg-red-700', desc: '50% skip (3t), +30% Base damage taken', effect: { skipChance: 0.50, skipTurns: 3, dmgTaken: 0.30, dmgTakenTurns: 3 } },
             { name: 'Re Alive', type: 'buff', mult: 0, cd: 0, color: 'bg-yellow-400', desc: 'Revive at 50% HP, +30% dmg (1x)', self_effect: { reAlive: true }, special: 'reAlive' },
-            { name: 'Infection', type: 'attack', mult: 1, cd: 7, color: 'bg-green-800', desc: 'Base dmg + 5 bleed + 1 burn + 2 poison', effect: { bleedStacks: 5, bleedTurns: 3, burnStacks: 1, burnTurns: 3, poisonStacks: 2, poisonTurns: 3 } },
-            { name: 'Hot Water', type: 'attack', mult: 1.03, cd: 7, color: 'bg-orange-600', desc: 'Base +3%, 1 burn stack', effect: { burnStacks: 1, burnTurns: 3 } },
-            { name: 'Scratch', type: 'attack', mult: 1.03, cd: 6, color: 'bg-red-600', desc: 'Base +3%, 2 bleed stacks', effect: { bleedStacks: 2, bleedTurns: 3 } }
+            { name: 'Infection', type: 'attack', mult: 1, cd: 7, color: 'bg-green-800', desc: 'Base damage + 5 bleed + 1 burn + 2 poison', effect: { bleedStacks: 5, bleedTurns: 3, burnStacks: 1, burnTurns: 3, poisonStacks: 2, poisonTurns: 3 } },
+            { name: 'Hot Water', type: 'attack', mult: 1.03, cd: 7, color: 'bg-orange-600', desc: 'Base damage +3%, 1 burn stack', effect: { burnStacks: 1, burnTurns: 3 } },
+            { name: 'Scratch', type: 'attack', mult: 1.03, cd: 6, color: 'bg-red-600', desc: 'Base damage +3%, 2 bleed stacks', effect: { bleedStacks: 2, bleedTurns: 3 } }
         ]
     },
     archer: {
         name: 'Archer', icon: '🏹', avatar: '🏹', baseHp: 15, baseDmg: 40,
         skills: [
-            { name: 'Arrow', type: 'attack', mult: 1, cd: 0, color: 'bg-gray-600', desc: 'Base damage' },
-            { name: 'Fire Arrow', type: 'attack', mult: 1.05, effect: { burn: true, burnTurns: 7 }, cd: 5, color: 'bg-orange-600', desc: '+5% dmg, Burn (7t)' },
-            { name: 'Poison Arrow', type: 'attack', mult: 1.07, effect: { poison: true, poisonTurns: 5 }, cd: 5, color: 'bg-green-600', desc: '+7% dmg, Poison (5t)' },
-            { name: 'Arrow Rain', type: 'attack', mult: 1.05, target: 'all', cd: 7, color: 'bg-sky-700', desc: '+5% dmg to ALL enemies' },
-            { name: 'Lazer Arrow', type: 'attack', mult: 1.25, cd: 10, color: 'bg-yellow-500', desc: '+25% dmg' },
-            { name: 'Trap', type: 'attack', mult: 1.05, effect: { burn: true, burnTurns: 3, defDown: 0.01 }, cd: 8, color: 'bg-amber-700', desc: '+5% dmg, -1% def, Burn' },
+            { name: 'Arrow', type: 'attack', mult: 1, cd: 0, color: 'bg-gray-700', desc: 'Base damage' },
+            { name: 'Fire Arrow', type: 'attack', mult: 1.05, effect: { burn: true, burnTurns: 7 }, cd: 5, color: 'bg-green-700', desc: '+5% Base damage, Burn (7t)' },
+            { name: 'Poison Arrow', type: 'attack', mult: 1.07, effect: { poison: true, poisonTurns: 5 }, cd: 5, color: 'bg-purple-700', desc: '+7% Base damage, Poison (5t)' },
+            { name: 'Arrow Rain', type: 'attack', mult: 1.05, target: 'all', cd: 7, color: 'bg-orange-700', desc: '+5% Base damage to ALL enemies' },
+            { name: 'Lazer Arrow', type: 'attack', mult: 1.25, cd: 10, color: 'bg-red-700', desc: '+25% Base damage' },
+            { name: 'Trap', type: 'attack', mult: 1.05, effect: { burn: true, burnTurns: 3, defDown: 0.01 }, cd: 8, color: 'bg-amber-700', desc: '+5% Base damage, -1% def, Burn' },
             { name: 'Bandaid', type: 'buff', mult: 0, self_effect: { healPct: 0.20, dmgBoost: 0.15, dmgBoostTurns: 3 }, cd: 8, color: 'bg-pink-500', desc: 'Heal 20% HP, +15% dmg (3t)' },
             { name: 'Bear Trap', type: 'attack', mult: 1, effect: { stunChance: 1.0, stunTurns: 2 }, cd: 7, color: 'bg-red-800', desc: 'Stun 2 turns' },
-            { name: 'Arrow Shield', type: 'buff', mult: 0, self_effect: { dmgReduction: 0.30, dmgReductionTurns: 5, reflect: 0.30, reflectTurns: 5 }, cd: 9, color: 'bg-blue-700', desc: '-30% dmg taken (5t), Reflect 30% (5t)' }
+            { name: 'Arrow Shield', type: 'buff', mult: 0, self_effect: { dmgReduction: 0.30, dmgReductionTurns: 5, reflect: 0.30, reflectTurns: 5 }, cd: 9, color: 'bg-blue-700', desc: '-30% Base damage taken (5t), Reflect 30% (5t)' }
         ]
     }
 };
