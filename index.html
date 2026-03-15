@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Eternal Ascension - Way of the Hero</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script src="data.js" defer></script>
+    <script src="game.js" defer></script>
+    <script src="ui.js" defer></script>
+    <script src="js/skills-inject.js" defer></script>
+</head>
+<body>
+
+    <!-- 1. MAIN MENU -->
+    <div id="screen-menu" class="screen active-screen" style="background: radial-gradient(ellipse at center, #1a0a2e 0%, #0d0d1a 100%); overflow: hidden; justify-content: center;">
+        <span class="particle" style="left:10%; animation-delay:0s; animation-duration:9s;">⚔️</span>
+        <span class="particle" style="left:25%; animation-delay:2s; animation-duration:7s;">🔥</span>
+        <span class="particle" style="left:50%; animation-delay:4s; animation-duration:11s;">⭐</span>
+        <span class="particle" style="left:70%; animation-delay:1s; animation-duration:8s;">💀</span>
+        <span class="particle" style="left:85%; animation-delay:3s; animation-duration:10s;">🗡️</span>
+        <div class="flex flex-col items-center z-10 px-6 w-full max-w-lg">
+            <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-red-600 mb-1 text-center" style="animation: title-glow 2s infinite; -webkit-text-stroke: 1px rgba(239,68,68,0.3);">Eternal Ascension</h1>
+            <p class="text-2xl font-bold text-orange-300 text-center mb-2" style="animation: title-glow 2s infinite;">Way of the Hero</p>
+            <p class="text-gray-400 tracking-widest uppercase text-sm mb-12">Choose Your Destiny</p>
+            <button onclick="confirmNewGame()" class="w-full mb-4 py-5 rounded-2xl font-black text-xl shadow-[0_0_30px_rgba(239,68,68,0.5)] transition active:scale-95 border-2 border-red-500 hover:border-red-400" style="background: linear-gradient(135deg, #7f1d1d, #991b1b, #7f1d1d);">
+                ⚔️ Start New Game
+            </button>
+            <button id="btn-continue-save" onclick="loadGameAndContinue()" class="w-full py-5 rounded-2xl font-black text-xl shadow-[0_0_20px_rgba(16,185,129,0.4)] transition active:scale-95 border-2 border-emerald-500 hover:border-emerald-400 hidden" style="background: linear-gradient(135deg, #064e3b, #065f46, #064e3b);">
+                ▶ Continue Saved Game
+            </button>
+        </div>
+    </div>
+
+    <!-- NEW GAME CONFIRMATION MODAL -->
+    <div id="modal-confirm-new-game" class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-80 z-50 items-center justify-center p-4" style="display:none;">
+        <div class="bg-gray-900 border-2 border-red-700 rounded-2xl p-6 w-full max-w-xs shadow-2xl text-center">
+            <div class="text-5xl mb-3">⚠️</div>
+            <h3 class="text-2xl font-black text-red-400 mb-2 uppercase tracking-wide">Start New Game?</h3>
+            <p class="text-gray-300 text-sm mb-6">This will <span class="text-red-400 font-bold">erase your current save</span> and start fresh. Are you sure?</p>
+            <div class="flex flex-col gap-3">
+                <button onclick="confirmNewGameYes()" class="w-full py-4 rounded-xl font-black text-lg border-2 border-red-500 hover:border-red-400 active:scale-95 transition shadow-[0_0_20px_rgba(239,68,68,0.4)]" style="background: linear-gradient(135deg, #7f1d1d, #991b1b, #7f1d1d);">
+                    ⚔️ Yes, Start New Game
+                </button>
+                <button onclick="closeConfirmNewGame()" class="w-full py-3 rounded-xl font-bold text-lg bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-300 active:scale-95 transition">
+                    ✕ Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1b. CLASS SELECT -->
+    <div id="screen-class-select" class="screen" style="background: radial-gradient(ellipse at center, #1a0a2e 0%, #0d0d1a 100%); overflow-y: auto;">
+        <div class="flex flex-col items-center z-10 px-4 w-full max-w-lg py-6">
+            <button onclick="showMenu()" class="self-start mb-6 text-gray-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2 bg-gray-800 border border-gray-600 hover:bg-gray-700 transition active:scale-95">← Back</button>
+            <h2 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400 mb-2">Choose Your Class</h2>
+            <p class="text-gray-500 mb-6 text-sm">Your class defines your combat style</p>
+            <div class="flex flex-col gap-4 w-full pb-6">
+                <button onclick="showGenderSelect('warrior')" class="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-red-800 hover:border-red-500 text-left transition-all active:scale-95 shadow-2xl hover:shadow-[0_0_20px_rgba(239,68,68,0.4)]" style="background: linear-gradient(145deg, #1c0a0a, #2d1010);">
+                    <div class="text-5xl flex-shrink-0" style="animation: float 3s infinite ease-in-out;">🤺</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-lg font-black text-red-400 mb-1">WARRIOR</div>
+                        <div class="text-xs text-gray-400 leading-relaxed mb-2">High HP · Physical Damage, Bleeds &amp; Armor Breaks. A relentless fighter who crushes enemies with brute force.</div>
+                        <div class="grid grid-cols-3 gap-1 text-[10px]">
+                            <div class="bg-red-900 rounded px-1 py-0.5 text-red-300 text-center">HP: HIGH</div>
+                            <div class="bg-orange-900 rounded px-1 py-0.5 text-orange-300 text-center">DMG: MED</div>
+                            <div class="bg-blue-900 rounded px-1 py-0.5 text-blue-300 text-center">DEF: HIGH</div>
+                        </div>
+                    </div>
+                </button>
+                <button onclick="showGenderSelect('mage')" class="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-blue-800 hover:border-blue-500 text-left transition-all active:scale-95 shadow-2xl hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]" style="background: linear-gradient(145deg, #0a0a1c, #101028);">
+                    <div class="text-5xl flex-shrink-0" style="animation: float 3s infinite ease-in-out; animation-delay: 1s;">🧙‍♂️</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-lg font-black text-blue-400 mb-1">MAGE</div>
+                        <div class="text-xs text-gray-400 leading-relaxed mb-2">Low HP · Magical Damage, AoE Spells &amp; Shields. A master of the arcane who obliterates foes with powerful spells.</div>
+                        <div class="grid grid-cols-3 gap-1 text-[10px]">
+                            <div class="bg-red-900 rounded px-1 py-0.5 text-red-300 text-center">HP: LOW</div>
+                            <div class="bg-orange-900 rounded px-1 py-0.5 text-orange-300 text-center">DMG: HIGH</div>
+                            <div class="bg-blue-900 rounded px-1 py-0.5 text-blue-300 text-center">DEF: LOW</div>
+                        </div>
+                    </div>
+                </button>
+                <button onclick="showGenderSelect('paladin')" class="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-yellow-800 hover:border-yellow-500 text-left transition-all active:scale-95 shadow-2xl hover:shadow-[0_0_20px_rgba(234,179,8,0.4)]" style="background: linear-gradient(145deg, #1c1500, #2d2200);">
+                    <div class="text-5xl flex-shrink-0" style="animation: float 3s infinite ease-in-out; animation-delay: 0.5s;">🛡️</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-lg font-black text-yellow-400 mb-1">PALADIN</div>
+                        <div class="text-xs text-gray-400 leading-relaxed mb-2">High HP · Hammer Attacks, Reflect &amp; Stuns. A holy warrior who wields divine power to protect and punish.</div>
+                        <div class="grid grid-cols-3 gap-1 text-[10px]">
+                            <div class="bg-red-900 rounded px-1 py-0.5 text-red-300 text-center">HP: HIGH</div>
+                            <div class="bg-orange-900 rounded px-1 py-0.5 text-orange-300 text-center">DMG: MED</div>
+                            <div class="bg-blue-900 rounded px-1 py-0.5 text-blue-300 text-center">DEF: HIGH</div>
+                        </div>
+                    </div>
+                </button>
+                <button onclick="showGenderSelect('ninja')" class="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-green-800 hover:border-green-500 text-left transition-all active:scale-95 shadow-2xl hover:shadow-[0_0_20px_rgba(34,197,94,0.4)]" style="background: linear-gradient(145deg, #0a1c0a, #101e10);">
+                    <div class="text-5xl flex-shrink-0" style="animation: float 3s infinite ease-in-out; animation-delay: 1.5s;">🥷</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-lg font-black text-green-400 mb-1">NINJA</div>
+                        <div class="text-xs text-gray-400 leading-relaxed mb-2">Low HP · Fast Attacks, Poison &amp; Smoke. A shadow assassin who strikes from darkness with lethal precision.</div>
+                        <div class="grid grid-cols-3 gap-1 text-[10px]">
+                            <div class="bg-red-900 rounded px-1 py-0.5 text-red-300 text-center">HP: LOW</div>
+                            <div class="bg-orange-900 rounded px-1 py-0.5 text-orange-300 text-center">DMG: HIGH</div>
+                            <div class="bg-blue-900 rounded px-1 py-0.5 text-blue-300 text-center">DEF: LOW</div>
+                        </div>
+                    </div>
+                </button>
+                <button onclick="showGenderSelect('cleric')" class="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-pink-800 hover:border-pink-500 text-left transition-all active:scale-95 shadow-2xl hover:shadow-[0_0_20px_rgba(236,72,153,0.4)]" style="background: linear-gradient(145deg, #1c0a15, #2d1022);">
+                    <div class="text-5xl flex-shrink-0" style="animation: float 3s infinite ease-in-out; animation-delay: 2s;">⛪</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-lg font-black text-pink-400 mb-1">CLERIC</div>
+                        <div class="text-xs text-gray-400 leading-relaxed mb-2">Low HP · Healer, Plagues &amp; Revivals. A divine healer who channels sacred power to sustain allies and curse enemies.</div>
+                        <div class="grid grid-cols-3 gap-1 text-[10px]">
+                            <div class="bg-red-900 rounded px-1 py-0.5 text-red-300 text-center">HP: LOW</div>
+                            <div class="bg-orange-900 rounded px-1 py-0.5 text-orange-300 text-center">DMG: LOW</div>
+                            <div class="bg-blue-900 rounded px-1 py-0.5 text-blue-300 text-center">HEAL: HIGH</div>
+                        </div>
+                    </div>
+                </button>
+                <button onclick="showGenderSelect('archer')" class="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-sky-800 hover:border-sky-500 text-left transition-all active:scale-95 shadow-2xl hover:shadow-[0_0_20px_rgba(56,189,248,0.4)]" style="background: linear-gradient(145deg, #0a1520, #102030);">
+                    <div class="text-5xl flex-shrink-0" style="animation: float 3s infinite ease-in-out; animation-delay: 2.5s;">🏹</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-lg font-black text-sky-400 mb-1">ARCHER</div>
+                        <div class="text-xs text-gray-400 leading-relaxed mb-2">Low HP · High Damage, Burns, Poisons &amp; Traps. A deadly ranged hunter who controls the battlefield from afar.</div>
+                        <div class="grid grid-cols-3 gap-1 text-[10px]">
+                            <div class="bg-red-900 rounded px-1 py-0.5 text-red-300 text-center">HP: VERY LOW</div>
+                            <div class="bg-orange-900 rounded px-1 py-0.5 text-orange-300 text-center">DMG: VERY HIGH</div>
+                            <div class="bg-blue-900 rounded px-1 py-0.5 text-blue-300 text-center">DEF: LOW</div>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1b. GENDER SELECT SCREEN -->
+    <div id="screen-gender-select" class="screen" style="background: radial-gradient(ellipse at center, #1a0a2e 0%, #0d0d1a 100%); overflow-y: auto;">
+        <div class="flex flex-col items-center z-10 px-4 w-full max-w-lg py-6">
+            <button onclick="switchScreen('screen-class-select')" class="self-start mb-6 text-gray-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2 bg-gray-800 border border-gray-600 hover:bg-gray-700 transition active:scale-95">← Back</button>
+            <h2 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-blue-400 mb-2">Choose Your Gender</h2>
+            <p class="text-gray-500 mb-6 text-sm">Your gender changes your character's appearance</p>
+            <div class="flex flex-col gap-4 w-full pb-6">
+                <button onclick="selectGenderAndStart('male')" class="w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-blue-700 hover:border-blue-400 text-left transition-all active:scale-95 shadow-2xl hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]" style="background: linear-gradient(145deg, #0a0a2e, #101840);">
+                    <div class="text-5xl flex-shrink-0" id="gender-male-preview">🤺</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xl font-black text-blue-400 mb-1">♂ MALE</div>
+                        <div class="text-xs text-gray-400 leading-relaxed" id="gender-male-class-label">Male Warrior</div>
+                    </div>
+                </button>
+                <button onclick="selectGenderAndStart('female')" class="w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-pink-700 hover:border-pink-400 text-left transition-all active:scale-95 shadow-2xl hover:shadow-[0_0_20px_rgba(236,72,153,0.4)]" style="background: linear-gradient(145deg, #2e0a20, #401030);">
+                    <div class="text-5xl flex-shrink-0" id="gender-female-preview">💂‍♀️</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xl font-black text-pink-400 mb-1">♀ FEMALE</div>
+                        <div class="text-xs text-gray-400 leading-relaxed" id="gender-female-class-label">Female Warrior</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. TOWN HUB -->
+    <div id="screen-hub" class="screen py-4">
+        <div class="w-full max-w-2xl px-4 flex flex-col items-center">
+
+            <!-- Gold Crest Town Title -->
+            <div class="w-full text-center pt-2 pb-3">
+                <h2 class="town-title-glow text-3xl font-black tracking-widest" style="background: linear-gradient(90deg, #fbbf24, #f59e0b, #fde68a, #f59e0b, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 200% auto;">⚜️ GoldCrest ⚜️</h2>
+                <div class="text-xl font-bold tracking-widest" style="background: linear-gradient(90deg, #fbbf24, #f59e0b, #fde68a, #f59e0b, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Town</div>
+                <div class="w-full h-px mt-2" style="background: linear-gradient(90deg, transparent, #fbbf24, #f59e0b, #fbbf24, transparent);"></div>
+            </div>
+
+            <!-- Top Status Bar (not clickable) -->
+            <div class="flex flex-col w-full bg-gray-800 p-3 rounded-xl shadow-lg border border-gray-700 mb-4">
+                <div class="flex justify-between items-center w-full mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="text-3xl" id="hub-avatar">🗡️</div>
+                        <button onclick="showProgressMenu()" class="text-left bg-gray-700 hover:bg-gray-600 active:scale-95 transition border border-blue-700/60 rounded-lg px-3 py-2 shadow-md" aria-label="View character progress and stats">
+                            <div class="font-bold text-lg text-blue-400 flex items-center gap-2">
+                                <span id="hub-class">Warrior</span>
+                                <span class="text-xs bg-blue-600 px-2 py-0.5 rounded-full text-white font-bold border border-blue-400 shadow tracking-wide">📊 STATS</span>
+                            </div>
+                            <div class="text-xs text-yellow-400 font-bold mt-0.5">Lvl <span id="hub-lvl">1</span> <span class="text-gray-400 font-normal text-xs">· tap to view</span></div>
+                        </button>
+                    </div>
+                    <div class="text-right flex flex-col items-end gap-1">
+                        <div class="text-sm font-bold text-yellow-500 bg-gray-900 px-2 py-1 rounded border border-gray-700" title="Your current wealth">💰 <span id="hub-gold">0</span></div>
+                        <div class="text-xs font-bold text-blue-300 bg-gray-900 px-2 py-1 rounded border border-gray-700" title="Required to enter Dungeon Portals">🎫 <span id="hub-tickets">0</span></div>
+                    </div>
+                </div>
+                <!-- Energy Bar -->
+                <div class="w-full mb-1">
+                    <div class="flex justify-between items-center mb-1">
+                        <div class="text-blue-400 font-bold text-xs">⚡ Energy: <span id="hub-energy" class="text-white">10</span>/<span id="hub-energy-max" class="text-white">10</span></div>
+                        <div class="text-xs text-gray-500">Regens 1/min</div>
+                    </div>
+                    <div class="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+                        <div id="hub-energy-bar" class="h-full bg-blue-500 rounded-full transition-all duration-500" style="width: 100%"></div>
+                    </div>
+                </div>
+                <!-- HP Bar -->
+                <div class="w-full mt-2">
+                    <div class="flex justify-between items-center mb-1">
+                        <div class="text-red-400 font-bold text-xs">❤️ HP: <span id="hub-hp-current" class="text-white">100</span>/<span id="hub-hp-max" class="text-white">100</span></div>
+                        <div class="text-xs text-gray-500" id="hub-hp-timer">Full</div>
+                    </div>
+                    <div class="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+                        <div id="hub-hp-bar" class="h-full bg-red-500 rounded-full transition-all duration-500" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="hub-level-up-noti" class="w-full bg-green-900 border border-green-500 text-green-300 p-3 rounded-lg text-center font-bold mb-4 hidden cursor-pointer shadow-lg animate-pulse" onclick="showAttributes()">
+                ✨ You leveled up! Spend your Attribute Points! ✨
+            </div>
+
+            <!-- Adventure Hunt Button -->
+            <div class="w-full mb-4">
+                <button onclick="showStoryMode()" title="Explore the world, gather resources, and hunt various enemies!" class="w-full bg-green-700 hover:bg-green-600 border border-green-500 py-4 rounded-xl font-bold text-xl shadow-[0_0_15px_rgba(34,197,94,0.5)] transition active:scale-95 flex justify-center items-center gap-2">
+                    📖 Adventure Hunt
+                </button>
+            </div>
+
+            <!-- Hero Bar: direct action buttons -->
+            <div class="w-full mb-4">
+                <div class="flex gap-2 w-full">
+                    <button onclick="showAttributes();" class="flex-1 text-sm font-bold px-3 py-2 rounded-xl border border-green-700 hover:bg-green-900 transition active:scale-95 text-green-400 flex items-center justify-center gap-1 relative" style="background: linear-gradient(135deg, #052e16, #1a2540);">
+                        💪 Attribute
+                        <span id="hub-attr-noti-hero" class="hidden absolute -top-1 -right-1 bg-green-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center animate-bounce font-bold shadow-lg">!</span>
+                    </button>
+                    <button onclick="showCharacter();" class="flex-1 text-sm font-bold px-3 py-2 rounded-xl border border-blue-700 hover:bg-blue-900 transition active:scale-95 text-blue-400 flex items-center justify-center gap-1 relative" style="background: linear-gradient(135deg, #0c1a3b, #1a2540);">
+                        🛡️ Character
+                        <span id="hub-char-noti-hero" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center animate-bounce font-bold shadow-lg">!</span>
+                    </button>
+                    <button onclick="showSkillTree();" class="flex-1 text-sm font-bold px-3 py-2 rounded-xl border border-purple-700 hover:bg-purple-900 transition active:scale-95 text-purple-400 flex items-center justify-center gap-1 relative" style="background: linear-gradient(135deg, #2e1065, #1a2540);">
+                        🌳 Skill Tree
+                        <span id="hub-skill-noti-hero" class="hidden absolute -top-1 -right-1 bg-purple-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center animate-pulse font-bold">!</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Grid -->
+            <div class="grid grid-cols-3 gap-2 w-full mb-6">
+                <button onclick="showQuests()" title="Complete objectives for Gold rewards" class="bg-gray-800 p-3 rounded-xl border border-gray-700 hover:bg-gray-700 flex flex-col items-center relative">
+                    <span id="quest-notify-badge" class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-lg border border-red-400 animate-pulse" style="display:none;">!</span>
+                    <span class="text-2xl mb-1">📜</span><span class="font-bold text-yellow-400 text-xs">Quests</span></button>
+                <button onclick="showPortal()" title="Enter Dungeons, Invasion, and Pet Battles" class="bg-gray-800 p-3 rounded-xl border border-gray-700 hover:bg-gray-700 flex flex-col items-center"><span class="text-2xl mb-1">🌌</span><span class="font-bold text-red-400 text-xs text-center">Portal</span></button>
+                <button onclick="showGraveyard()" title="Resurrect and fight defeated Bosses" class="bg-gray-800 p-3 rounded-xl border border-gray-700 hover:bg-gray-700 flex flex-col items-center"><span class="text-2xl mb-1">🪦</span><span class="font-bold text-gray-400 text-xs">Graveyard</span></button>
+                
+                <button onclick="showMerchants()" title="Visit merchants for gear, enchants, potions and food" class="bg-gray-800 p-3 rounded-xl border border-gray-700 hover:bg-gray-700 flex flex-col items-center"><span class="text-2xl mb-1">🏪</span><span class="font-bold text-amber-400 text-xs">Merchants</span></button>
+                <button onclick="showWell()" title="Restore yourself and buy temporary blessings" class="bg-gray-800 p-3 rounded-xl border border-gray-700 hover:bg-gray-700 flex flex-col items-center"><span class="text-2xl mb-1">⛲</span><span class="font-bold text-cyan-300 text-xs">Well</span></button>
+                <button onclick="showInventory()" title="View your gathered items, potions, and raw equipment" class="bg-gray-800 p-3 rounded-xl border border-gray-700 hover:bg-gray-700 flex flex-col items-center"><span class="text-2xl mb-1">🧳</span><span class="font-bold text-orange-300 text-xs">Bag</span></button>
+
+                <button onclick="showCodex()" class="bg-gray-800 p-3 rounded-xl border border-gray-700 hover:bg-gray-700 flex flex-col items-center relative">
+                    <span class="text-2xl mb-1 relative">📖<span id="hub-codex-noti" class="hidden absolute -top-2 -right-3 bg-yellow-600 text-black text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold shadow-lg">!</span></span>
+                    <span class="font-bold text-yellow-400 text-xs">Codex</span>
+                </button>
+
+                <button onclick="changeClass()" class="bg-gray-800 p-3 rounded-xl border border-gray-700 hover:bg-gray-700 flex flex-col items-center">
+                    <span class="text-2xl mb-1">🔄</span>
+                    <span class="font-bold text-cyan-400 text-xs">Change Class</span>
+                </button>
+                <button onclick="showPetCodex()" title="View and claim Pet discovery rewards" class="bg-gray-800 p-3 rounded-xl border border-gray-700 hover:bg-gray-700 flex flex-col items-center relative">
+                    <span class="text-2xl mb-1 relative">🐾<span id="hub-pet-noti" class="hidden absolute -top-2 -right-3 bg-pink-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold shadow-lg">!</span></span>
+                    <span class="font-bold text-pink-400 text-xs">Pet Codex</span>
+                </button>
+
+                <button onclick="showSettings()" title="Game Settings" class="bg-gray-800 p-3 rounded-xl border border-gray-700 hover:bg-gray-700 flex flex-col items-center">
+                    <span class="text-2xl mb-1">⚙️</span><span class="font-bold text-gray-400 text-xs">Settings</span>
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MERCHANTS SUBMENU -->
+    <div id="screen-merchants" class="screen py-8">
+        <div class="w-full max-w-xl px-4 flex flex-col h-full">
+            <button onclick="showHub()" class="btn-back self-start mb-6 text-amber-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Town</button>
+            <h2 class="text-3xl font-bold mb-2 text-amber-400 text-center tracking-widest drop-shadow-md">🏪 MERCHANTS</h2>
+            <p class="text-xs text-gray-400 text-center mb-6">Visit the town's merchants for gear, crafting, and more.</p>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="showShop()" class="bg-gray-800 hover:bg-gray-700 border border-gray-600 p-5 rounded-xl flex flex-col items-center transition active:scale-95 shadow-lg">
+                    <span class="text-4xl mb-2">🛒</span>
+                    <span class="font-bold text-white text-sm">Shop</span>
+                    <span class="text-[10px] text-gray-400 mt-1 text-center">Buy gear & sell materials</span>
+                </button>
+                <button onclick="showEnchanter()" class="bg-gray-800 hover:bg-gray-700 border border-gray-600 p-5 rounded-xl flex flex-col items-center transition active:scale-95 shadow-lg">
+                    <span class="text-4xl mb-2">✨</span>
+                    <span class="font-bold text-purple-400 text-sm">Enchanter</span>
+                    <span class="text-[10px] text-gray-400 mt-1 text-center">Upgrade equipped gear</span>
+                </button>
+                <button onclick="showAlchemist()" class="bg-gray-800 hover:bg-gray-700 border border-gray-600 p-5 rounded-xl flex flex-col items-center transition active:scale-95 shadow-lg">
+                    <span class="text-4xl mb-2">⚗️</span>
+                    <span class="font-bold text-green-400 text-sm">Alchemist</span>
+                    <span class="text-[10px] text-gray-400 mt-1 text-center">Craft healing potions</span>
+                </button>
+                <button onclick="showChef()" class="bg-gray-800 hover:bg-gray-700 border border-gray-600 p-5 rounded-xl flex flex-col items-center transition active:scale-95 shadow-lg">
+                    <span class="text-4xl mb-2">👨‍🍳</span>
+                    <span class="font-bold text-orange-400 text-sm">Chef</span>
+                    <span class="text-[10px] text-gray-400 mt-1 text-center">Cook combat food buffs</span>
+                </button>
+                <button onclick="showWorkshop()" class="bg-gray-800 hover:bg-gray-700 border border-gray-600 p-5 rounded-xl flex flex-col items-center transition active:scale-95 shadow-lg">
+                    <span class="text-4xl mb-2">⚒️</span>
+                    <span class="font-bold text-cyan-400 text-sm">Workshop</span>
+                    <span class="text-[10px] text-gray-400 mt-1 text-center">Scale Mythic gear with Soul Pebbles</span>
+                </button>
+                <button onclick="showBurglar()" class="bg-gray-800 hover:bg-gray-700 border border-gray-600 p-5 rounded-xl flex flex-col items-center transition active:scale-95 shadow-lg">
+                    <span class="text-4xl mb-2">🗡️</span>
+                    <span class="font-bold text-red-400 text-sm">Burglar</span>
+                    <span class="text-[10px] text-gray-400 mt-1 text-center">Buy combat usable items</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS MENU -->
+    <div id="screen-settings" class="screen py-8">
+        <div class="w-full max-w-xl px-4 flex flex-col h-full">
+            <button onclick="showHub()" class="btn-back self-start mb-6 text-gray-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Town</button>
+            <h2 class="text-3xl font-bold mb-6 text-gray-300 text-center tracking-widest drop-shadow-md">SETTINGS</h2>
+
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 mb-4 shadow-lg flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-white text-lg">Sound Effects</h3>
+                    <p class="text-xs text-gray-400">Combat hits, healing, and clicks.</p>
+                </div>
+                <button id="toggle-sound-btn" onclick="toggleSetting('sound')" class="px-6 py-2 rounded font-bold text-white transition active:scale-95">ON</button>
+            </div>
+
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 mb-4 shadow-lg flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-white text-lg">Music</h3>
+                    <p class="text-xs text-gray-400">Boss Music (plays during boss fights).</p>
+                </div>
+                <button id="toggle-music-btn" onclick="toggleSetting('music')" class="px-6 py-2 rounded font-bold text-white transition active:scale-95">ON</button>
+            </div>
+
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 mb-4 shadow-lg flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-white text-lg">Gender</h3>
+                    <p class="text-xs text-gray-400">Swap between Male ♂ and Female ♀ appearance.</p>
+                </div>
+                <button id="toggle-gender-btn" onclick="toggleGender()" class="px-6 py-2 rounded font-bold text-white transition active:scale-95">♂ Male</button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mt-4 border-t border-gray-700 pt-6">
+                <button onclick="showExport()" class="bg-blue-800 hover:bg-blue-700 text-blue-200 border border-blue-600 p-3 rounded-xl font-bold transition shadow-lg active:scale-95 flex flex-col items-center">
+                    <span class="text-2xl mb-1">📤</span> Export Save
+                </button>
+                <button onclick="showImport()" class="bg-red-800 hover:bg-red-700 text-red-200 border border-red-600 p-3 rounded-xl font-bold transition shadow-lg active:scale-95 flex flex-col items-center">
+                    <span class="text-2xl mb-1">📥</span> Import Save
+                </button>
+            </div>
+            <div class="mt-4 border-t border-gray-700 pt-6">
+                <button onclick="showMenu()" class="w-full bg-gray-900 hover:bg-gray-800 text-orange-300 border border-orange-600 p-4 rounded-xl font-bold transition shadow-lg active:scale-95 flex flex-col items-center">
+                    <span class="text-2xl mb-1">🏠</span> Main Menu
+                    <span class="text-[10px] text-gray-400 mt-1">Return to Start New Game / Continue screen</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SAVE/LOAD MODAL -->
+    <div id="modal-save-load" class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-95 z-50 hidden flex-col items-center justify-center p-4">
+        <div class="bg-gray-800 border border-blue-500 rounded-xl p-4 w-full max-w-md flex flex-col shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-600 pb-2">
+                <h3 class="text-xl font-bold text-white uppercase" id="sl-modal-title">Export Save</h3>
+                <button onclick="closeSaveLoadModal()" class="text-red-400 font-bold text-2xl px-2 hover:scale-110 transition">✕</button>
+            </div>
+            <p class="text-xs text-gray-400 mb-2" id="sl-modal-desc">Copy this code to back up your game.</p>
+            <textarea id="sl-modal-text" class="w-full h-32 bg-gray-900 text-gray-300 p-2 rounded border border-gray-600 font-mono text-xs mb-4" spellcheck="false"></textarea>
+            <button id="sl-modal-btn" class="w-full font-bold py-3 rounded transition active:scale-95">Copy to Clipboard</button>
+        </div>
+    </div>
+
+    <!-- STORY MODE -->
+    <div id="screen-story" class="screen py-8">
+        <div class="w-full max-w-xl px-4 flex flex-col h-full">
+            <div class="flex justify-between items-center mb-6">
+                <button onclick="showHub()" class="btn-back text-blue-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Town</button>
+                <div class="text-blue-400 font-bold bg-gray-900 px-3 py-1 rounded-full border border-blue-900 shadow-inner">⚡ <span id="story-energy">20</span></div>
+            </div>
+            
+            <h2 class="text-3xl font-bold mb-6 text-indigo-400 text-center tracking-widest drop-shadow-md">ADVENTURE HUNT</h2>
+
+            <div class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2 border-b border-gray-700 pb-1">Combat Operations</div>
+            <div class="flex flex-col gap-3 mb-6">
+                <button onclick="startBattleMode('hunting')" title="Fight beasts. Drops Herbs for crafting at the Alchemist." class="w-full bg-green-900 hover:bg-green-800 border border-green-600 p-4 rounded-xl shadow-lg transition active:scale-95 flex justify-between items-center">
+                    <div class="flex items-center gap-3"><span class="text-3xl">🐗</span><div class="text-left"><div class="text-lg font-bold text-green-200">Hunting (Wilderness)</div>
+                    <div class="text-xs text-green-400">(Drops Herbs for Alchemist) | Progress: <span id="story-prog-hunting">0</span>/10</div></div></div>
+                    <span class="text-sm font-bold text-gray-300 bg-black bg-opacity-40 px-2 py-1 rounded">1 ⚡</span>
+                </button>
+
+                <button onclick="startBattleMode('pillage')" title="Fight humanoid enemies. 50% chance to drop equipment per kill." class="w-full bg-red-900 hover:bg-red-800 border border-red-600 p-4 rounded-xl shadow-lg transition active:scale-95 flex justify-between items-center">
+                    <div class="flex items-center gap-3"><span class="text-3xl">🏠</span><div class="text-left"><div class="text-lg font-bold text-red-200">Pillage Village</div>
+                    <div class="text-xs text-red-400">50% Equipment Drops | Progress: <span id="story-prog-pillage">0</span>/10</div></div></div>
+                    <span class="text-sm font-bold text-gray-300 bg-black bg-opacity-40 px-2 py-1 rounded">1 ⚡</span>
+                </button>
+
+                <button onclick="startBattleMode('workshop')" title="Fight constructs. Drops Enchanting Materials only." class="w-full bg-purple-900 hover:bg-purple-800 border border-purple-600 p-4 rounded-xl shadow-lg transition active:scale-95 flex justify-between items-center">
+                    <div class="flex items-center gap-3"><span class="text-3xl">⚙️</span><div class="text-left"><div class="text-lg font-bold text-purple-200">Raid the Workshop</div>
+                    <div class="text-xs text-purple-400">Drops Enchanting Cores | Progress: <span id="story-prog-workshop">0</span>/10</div></div></div>
+                    <span class="text-sm font-bold text-gray-300 bg-black bg-opacity-40 px-2 py-1 rounded">1 ⚡</span>
+                </button>
+
+                <button onclick="startBattleMode('island_defense')" title="Defend the island! Mobs drop Fish for crafting at the Chef." class="w-full bg-cyan-900 hover:bg-cyan-800 border border-cyan-600 p-4 rounded-xl shadow-lg transition active:scale-95 flex justify-between items-center">
+                    <div class="flex items-center gap-3"><span class="text-3xl">🏝️</span><div class="text-left"><div class="text-lg font-bold text-cyan-200">Island Defense</div>
+                    <div class="text-xs text-cyan-400">(Drops Fish for Chef) | Progress: <span id="story-prog-island">0</span>/10</div></div></div>
+                    <span class="text-sm font-bold text-gray-300 bg-black bg-opacity-40 px-2 py-1 rounded">1 ⚡</span>
+                </button>
+            </div>
+
+            <div class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2 border-b border-gray-700 pb-1">Passive Gathering</div>
+            <div class="grid grid-cols-3 gap-2 mb-4">
+                <button id="btn-gather-herbs" onclick="gatherAction('herbs')" class="bg-green-900 hover:bg-green-800 border border-green-600 p-3 rounded-xl flex flex-col items-center transition active:scale-95 disabled:opacity-50 disabled:grayscale relative">
+                    <span class="text-2xl mb-1">🌿</span><span class="font-bold text-green-200 text-xs">Forage Herbs</span>
+                    <span class="text-[10px] text-gray-300 mt-1" id="timer-herbs">Ready (1⚡)</span>
+                </button>
+                <button id="btn-gather-fish" onclick="gatherAction('fish')" class="bg-blue-900 hover:bg-blue-800 border border-blue-600 p-3 rounded-xl flex flex-col items-center transition active:scale-95 disabled:opacity-50 disabled:grayscale relative">
+                    <span class="text-2xl mb-1">🎣</span><span class="font-bold text-blue-200 text-xs">Fish</span>
+                    <span class="text-[10px] text-gray-300 mt-1" id="timer-fish">Ready (1⚡)</span>
+                </button>
+                <button id="btn-gather-enchants" onclick="gatherAction('enchants')" class="bg-purple-900 hover:bg-purple-800 border border-purple-600 p-3 rounded-xl flex flex-col items-center transition active:scale-95 disabled:opacity-50 disabled:grayscale relative">
+                    <span class="text-2xl mb-1">✨</span><span class="font-bold text-purple-200 text-xs">Gather Cores</span>
+                    <span class="text-[10px] text-gray-300 mt-1" id="timer-enchants">Ready (1⚡)</span>
+                </button>
+            </div>
+
+            <div class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2 border-b border-gray-700 pb-1">Gamble (50% Chance)</div>
+            <div class="grid grid-cols-3 gap-2 mb-6">
+                <button onclick="gambleGold(10)" class="bg-yellow-900 hover:bg-yellow-800 border border-yellow-600 p-2 rounded-xl font-bold text-yellow-200 text-xs transition active:scale-95 shadow-md">10 G</button>
+                <button onclick="gambleGold(50)" class="bg-yellow-900 hover:bg-yellow-800 border border-yellow-600 p-2 rounded-xl font-bold text-yellow-200 text-xs transition active:scale-95 shadow-md">50 G</button>
+                <button onclick="gambleGold(100)" class="bg-yellow-900 hover:bg-yellow-800 border border-yellow-600 p-2 rounded-xl font-bold text-yellow-200 text-xs transition active:scale-95 shadow-md">100 G</button>
+            </div>
+            
+            <div id="story-log" class="w-full bg-black bg-opacity-50 border border-gray-800 rounded-lg p-3 text-sm text-center text-gray-300 min-h-[60px] shadow-inner flex items-center justify-center">
+                Select an operation...
+            </div>
+        </div>
+    </div>
+
+    <!-- CHARACTER & EQUIPMENT SCREEN -->
+    <div id="screen-character" class="screen py-8">
+        <div class="w-full max-w-2xl px-4 flex flex-col h-full">
+            <div class="flex justify-between items-center mb-4">
+                <button onclick="showHub()" class="btn-back self-start text-blue-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Town</button>
+            </div>
+            
+            <h2 class="text-3xl font-bold mb-4 text-blue-400 text-center tracking-widest">CHARACTER</h2>
+
+            <!-- Attributes Link -->
+            <div class="bg-gray-800 border border-green-600 rounded-xl p-3 mb-4 text-center shadow-[0_0_15px_rgba(22,163,74,0.2)]">
+                <button onclick="showAttributes()" class="w-full bg-green-800 hover:bg-green-700 text-green-100 py-2 rounded-lg font-bold text-sm transition active:scale-95 border border-green-500 shadow-md">Manage Attributes</button>
+            </div>
+
+            <!-- Quick Equip -->
+            <div class="bg-gray-800 border border-cyan-600 rounded-xl p-3 mb-4 text-center shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+                <button onclick="quickEquipAll()" class="w-full bg-cyan-800 hover:bg-cyan-700 text-cyan-100 py-2 rounded-lg font-bold text-sm transition active:scale-95 border border-cyan-500 shadow-md">⚡ Quick Equip</button>
+            </div>
+
+            <!-- Paper Doll Layout -->
+            <div id="char-avatar-container" class="bg-gray-900 border border-gray-700 rounded-2xl p-3 shadow-2xl mb-4 flex justify-between items-center relative">
+                <div class="flex flex-col gap-2">
+                    <div class="equip-slot" id="slot-head" onclick="openEquipModal('head')" title="Head">🪖</div>
+                    <div class="equip-slot" id="slot-shoulders" onclick="openEquipModal('shoulders')" title="Shoulders">🛡️</div>
+                    <div class="equip-slot" id="slot-arms" onclick="openEquipModal('arms')" title="Arms">🦾</div>
+                    <div class="equip-slot" id="slot-weapon" onclick="openEquipModal('weapon')" title="Weapon">⚔️</div>
+                </div>
+                <div class="flex flex-col items-center gap-2 px-1">
+                    <div class="text-xs text-yellow-400 font-bold bg-gray-800 px-3 py-1 rounded-full border border-gray-600 shadow-inner">Lvl <span id="char-lvl">1</span> <span id="char-class-name">Warrior</span></div>
+                    <div class="text-5xl my-2 drop-shadow-lg" id="char-avatar-display">🗡️</div>
+                    <div class="flex gap-2">
+                        <div class="equip-slot" id="slot-chest" onclick="openEquipModal('chest')" title="Chest">🦺</div>
+                        <div class="equip-slot" id="slot-waist" onclick="openEquipModal('waist')" title="Waist">🪢</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="equip-slot" id="slot-legs" onclick="openEquipModal('legs')" title="Legs">👖</div>
+                        <div class="equip-slot" id="slot-boots" onclick="openEquipModal('boots')" title="Boots">🥾</div>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <div class="equip-slot" id="slot-necklace" onclick="openEquipModal('necklace')" title="Necklace">📿</div>
+                    <div class="equip-slot" id="slot-ring1" onclick="openEquipModal('ring1')" title="Ring 1">💍</div>
+                    <div class="equip-slot" id="slot-ring2" onclick="openEquipModal('ring2')" title="Ring 2">💍</div>
+                    <div class="equip-slot" id="slot-ring3" onclick="openEquipModal('ring3')" title="Ring 3">💍</div>
+                    <div class="equip-slot" id="slot-ring4" onclick="openEquipModal('ring4')" title="Ring 4">💍</div>
+                    <div class="equip-slot" id="slot-cape" onclick="openEquipModal('cape')" title="Cape">🧥</div>
+                </div>
+            </div>
+
+            <!-- Stats Summary -->
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-3 shadow-lg mb-4 text-xs grid grid-cols-2 gap-y-2">
+                <div class="text-gray-400">Total HP: <span class="text-green-400 font-bold float-right" id="char-stat-hp">100</span></div>
+                <div class="text-gray-400 pl-3 border-l border-gray-600">Total Dmg: <span class="text-orange-400 font-bold float-right" id="char-stat-dmg">0</span></div>
+                <div class="text-gray-400">Total Def: <span class="text-blue-400 font-bold float-right" id="char-stat-def">0</span></div>
+                <div class="text-gray-400 pl-3 border-l border-gray-600">HP Regen: <span class="text-green-300 font-bold float-right" id="char-stat-regen">0</span></div>
+                <div class="text-gray-400">Dodge Chance: <span class="text-purple-400 font-bold float-right" id="char-stat-dodge">0%</span></div>
+                <div class="text-gray-400 pl-3 border-l border-gray-600">Hit Chance: <span class="text-green-400 font-bold float-right" id="char-stat-hit">0%</span></div>
+                <div class="text-gray-400">Crit Chance: <span class="text-yellow-400 font-bold float-right" id="char-stat-crit">0%</span></div>
+                <div class="text-gray-400 pl-3 border-l border-gray-600">Crit Damage: <span class="text-red-400 font-bold float-right" id="char-stat-critdmg">100%</span></div>
+                <div class="text-gray-400">Dmg Reduction: <span class="text-orange-400 font-bold float-right" id="char-stat-dmgred">0%</span></div>
+                <div class="text-gray-400 pl-3 border-l border-gray-600">Dmg Reflect: <span class="text-orange-300 font-bold float-right" id="char-stat-reflect">0%</span></div>
+                <div class="text-gray-400">Skill Dmg: <span class="text-yellow-300 font-bold float-right" id="char-stat-skilldmg">0%</span></div>
+                <div class="text-gray-400 pl-3 border-l border-gray-600">Dmg Mitigation: <span class="text-purple-300 font-bold float-right" id="char-stat-mitigation">0%</span></div>
+                <div class="text-gray-400 col-span-2 text-center mt-1 pt-1 border-t border-gray-700">Gear Score: <span class="text-purple-400 font-bold" id="char-stat-gs">0</span></div>
+            </div>
+
+            <!-- Skills Loadout -->
+            <div class="bg-gray-800 border border-purple-700 rounded-xl p-3 shadow-lg mb-4">
+                <div class="text-sm font-bold text-purple-300 mb-2 border-b border-gray-700 pb-1">Equipped Skills (Max 5)</div>
+                <div class="grid grid-cols-5 gap-1" id="char-skill-slots"></div>
+            </div>
+
+            <!-- Class Skills Guide -->
+            <div class="bg-gray-800 border border-indigo-600 rounded-xl p-3 mb-4 text-center shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                <button onclick="showSkillGuide()" class="w-full bg-indigo-800 hover:bg-indigo-700 text-indigo-100 py-2 rounded-lg font-bold text-sm transition active:scale-95 border border-indigo-500 shadow-md">📖 Class Skills Guide</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SKILL GUIDE SCREEN -->
+    <div id="screen-skill-guide" class="screen py-8">
+        <div class="w-full max-w-xl px-4 flex flex-col h-full">
+            <div class="flex justify-between items-center mb-4">
+                <button onclick="showCharacter()" class="btn-back self-start text-indigo-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Character</button>
+            </div>
+            <h2 class="text-3xl font-bold mb-1 text-indigo-400 text-center tracking-widest">📖 CLASS SKILLS</h2>
+            <p class="text-xs text-gray-400 text-center mb-4" id="skill-guide-class-name"></p>
+            <div id="skill-guide-list" class="flex flex-col gap-3 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- ATTRIBUTES SCREEN -->
+    <div id="screen-attributes" class="screen py-8">
+        <div class="w-full max-w-xl px-4 flex flex-col h-full">
+            <button onclick="showHub()" class="btn-back self-start mb-4 text-green-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Town</button>
+            <h2 class="text-3xl font-bold mb-2 text-green-400 text-center tracking-widest">ATTRIBUTES</h2>
+            <div class="flex justify-between items-center mb-4 bg-gray-900 p-3 rounded-xl border border-green-800 shadow-inner">
+                <span class="font-bold text-white">Unspent Points:</span>
+                <span class="text-2xl font-bold text-green-400 drop-shadow-[0_0_5px_rgba(34,197,94,0.8)]" id="attr-points-avail">0</span>
+            </div>
+            
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-3 shadow-lg flex flex-col gap-2 mb-4" id="attr-list">
+                <!-- Dynamically populated -->
+            </div>
+            <button onclick="respecAttributes()" class="w-full bg-red-700 hover:bg-red-600 text-white py-2 rounded-lg font-bold text-sm transition active:scale-95 border border-red-500 shadow-md">🔄 Respec All Attributes (Free)</button>
+        </div>
+    </div>
+
+    <!-- EQUIPMENT MODAL -->
+    <div id="modal-equip" class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-95 z-50 hidden flex-col items-center justify-center p-4">
+        <div class="bg-gray-800 border border-blue-500 rounded-xl p-4 w-full max-w-md flex flex-col max-h-[85vh] shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-600 pb-2">
+                <h3 class="text-xl font-bold text-white uppercase" id="equip-modal-title">Select Gear</h3>
+                <button onclick="closeEquipModal()" class="text-red-400 font-bold text-2xl px-2 hover:scale-110 transition">✕</button>
+            </div>
+            <div id="equip-modal-list" class="flex flex-col overflow-y-auto pr-1 flex-grow gap-2"></div>
+        </div>
+    </div>
+
+    <!-- SKILL SELECTION MODAL -->
+    <div id="modal-skills" class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-95 z-50 hidden flex-col items-center justify-center p-4">
+        <div class="bg-gray-800 border border-purple-500 rounded-xl p-4 w-full max-w-md flex flex-col max-h-[85vh] shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-600 pb-2">
+                <h3 class="text-xl font-bold text-purple-300 uppercase">Equip Skill</h3>
+                <button onclick="closeSkillModal()" class="text-red-400 font-bold text-2xl px-2 hover:scale-110 transition">✕</button>
+            </div>
+            <button onclick="unequipSkill()" class="w-full bg-red-900 hover:bg-red-800 text-white py-2 rounded font-bold text-sm mb-4 transition active:scale-95 border border-red-500">Unequip Slot</button>
+            <div id="skill-modal-list" class="flex flex-col gap-2 overflow-y-auto pr-1 flex-grow"></div>
+        </div>
+    </div>
+    
+    <!-- ENCHANT SELECTION MODAL -->
+    <div id="modal-enchant" class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-95 z-50 hidden flex-col items-center justify-center p-4">
+        <div class="bg-gray-800 border border-purple-500 rounded-xl p-4 w-full max-w-md flex flex-col max-h-[85vh] shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-600 pb-2">
+                <h3 class="text-xl font-bold text-white uppercase" id="enchant-modal-title">Enchant Gear</h3>
+                <button onclick="closeEnchantModal()" class="text-red-400 font-bold text-2xl px-2 hover:scale-110 transition">✕</button>
+            </div>
+            <div id="enchant-modal-list" class="flex flex-col overflow-y-auto pr-1 flex-grow gap-2"></div>
+        </div>
+    </div>
+
+    <!-- COMBAT BAG MODAL -->
+    <div id="modal-combat-bag" class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-95 z-50 hidden flex-col items-center justify-center p-4">
+        <div class="bg-gray-800 border border-orange-500 rounded-xl p-4 w-full max-w-md flex flex-col max-h-[85vh] shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-600 pb-2">
+                <h3 class="text-xl font-bold text-orange-300 uppercase">Your Satchel</h3>
+                <button onclick="closeCombatBag()" class="text-red-400 font-bold text-2xl px-2 hover:scale-110 transition">✕</button>
+            </div>
+            <div id="combat-bag-list" class="flex flex-col overflow-y-auto pr-1 flex-grow gap-2"></div>
+        </div>
+    </div>
+
+    <!-- BAG / INVENTORY (TOWN) -->
+    <div id="screen-inventory" class="screen py-8 bg-black">
+        <div class="w-full max-w-xl px-4 flex flex-col h-full">
+            <button onclick="showHub()" class="btn-back self-start mb-6 text-gray-300 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Town</button>
+            <div class="bag-theme p-6 rounded-2xl shadow-2xl border-4">
+                <h2 class="text-3xl font-bold mb-4 text-stone-300 text-center tracking-widest drop-shadow-md">ADVENTURER'S SATCHEL</h2>
+                <h3 class="text-lg font-bold text-stone-400 mb-2 border-b border-stone-600 pb-1" id="inv-mats-header">Materials & Ingredients</h3>
+                <div class="grid grid-cols-2 gap-2 mb-6" id="inv-materials-list"></div>
+                <h3 class="text-lg font-bold text-stone-400 mb-2 border-b border-stone-600 pb-1" id="inv-cons-header">Consumables</h3>
+                <div class="grid gap-2 mb-6" id="inv-potions-list"></div>
+                <h3 class="text-lg font-bold text-stone-400 mb-2 border-b border-stone-600 pb-1" id="inv-eq-header">Unequipped Gear</h3>
+                <div class="flex flex-col gap-2" id="inv-equip-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SKILL TREE -->
+    <div id="screen-skilltree" class="screen py-8">
+        <div class="w-full max-w-xl px-4 flex flex-col h-full">
+            <button onclick="showHub()" class="btn-back self-start mb-6 text-purple-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Town</button>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-3xl font-bold text-purple-400">SKILL TREE</h2>
+                <div class="bg-gray-800 px-3 py-1 rounded-full border border-purple-500 font-bold text-purple-300 shadow-md">SP: <span id="tree-sp">0</span></div>
+            </div>
+            
+            <!-- Warrior Tree -->
+            <div id="tree-warrior" class="w-full">
+                <div class="flex justify-between items-center mb-2">
+                    <p class="text-xs text-gray-400">Choose a path! Grants random Enhancements.</p>
+                    <div class="text-sm font-bold text-white bg-gray-800 px-2 py-1 rounded shadow-inner border border-gray-700">Prog: <span id="tree-progress" class="text-purple-400">0</span></div>
+                </div>
+                <div id="warrior-tree-header" class="flex gap-2 w-full mb-1"></div>
+                <div class="flex gap-2 w-full h-96 overflow-y-auto p-2 bg-gray-900 border border-gray-700 rounded-xl shadow-inner mb-4" id="warrior-tree-container">
+                    <!-- Javascript Populated Columns -->
+                </div>
+            </div>
+            
+            <!-- Mage Tree -->
+            <div id="tree-mage" class="hidden w-full">
+                <div class="flex justify-between items-center mb-2">
+                    <p class="text-xs text-gray-400">Choose a path! Grants random Enhancements.</p>
+                    <div class="text-sm font-bold text-white bg-gray-800 px-2 py-1 rounded shadow-inner border border-gray-700">Prog: <span id="tree-progress-mage" class="text-purple-400">0</span></div>
+                </div>
+                <div id="mage-tree-header" class="flex gap-2 w-full mb-1"></div>
+                <div class="flex gap-2 w-full h-96 overflow-y-auto p-2 bg-gray-900 border border-gray-700 rounded-xl shadow-inner mb-4" id="mage-tree-container">
+                    <!-- Javascript Populated Columns -->
+                </div>
+            </div>
+
+            <!-- Paladin Tree -->
+            <div id="tree-paladin" class="hidden w-full">
+                <div class="flex justify-between items-center mb-2">
+                    <p class="text-xs text-gray-400">Choose a path! Grants random Enhancements.</p>
+                    <div class="text-sm font-bold text-white bg-gray-800 px-2 py-1 rounded shadow-inner border border-gray-700">Prog: <span id="tree-progress-paladin" class="text-purple-400">0</span></div>
+                </div>
+                <div id="paladin-tree-header" class="flex gap-2 w-full mb-1"></div>
+                <div class="flex gap-2 w-full h-96 overflow-y-auto p-2 bg-gray-900 border border-gray-700 rounded-xl shadow-inner mb-4" id="paladin-tree-container">
+                    <!-- Javascript Populated Columns -->
+                </div>
+            </div>
+
+            <!-- Ninja Tree -->
+            <div id="tree-ninja" class="hidden w-full">
+                <div class="flex justify-between items-center mb-2">
+                    <p class="text-xs text-gray-400">Choose a path! Grants random Enhancements.</p>
+                    <div class="text-sm font-bold text-white bg-gray-800 px-2 py-1 rounded shadow-inner border border-gray-700">Prog: <span id="tree-progress-ninja" class="text-purple-400">0</span></div>
+                </div>
+                <div id="ninja-tree-header" class="flex gap-2 w-full mb-1"></div>
+                <div class="flex gap-2 w-full h-96 overflow-y-auto p-2 bg-gray-900 border border-gray-700 rounded-xl shadow-inner mb-4" id="ninja-tree-container">
+                    <!-- Javascript Populated Columns -->
+                </div>
+            </div>
+
+            <!-- Cleric Tree -->
+            <div id="tree-cleric" class="hidden w-full">
+                <div class="flex justify-between items-center mb-2">
+                    <p class="text-xs text-gray-400">Choose a path! Grants random Enhancements.</p>
+                    <div class="text-sm font-bold text-white bg-gray-800 px-2 py-1 rounded shadow-inner border border-gray-700">Prog: <span id="tree-progress-cleric" class="text-purple-400">0</span></div>
+                </div>
+                <div id="cleric-tree-header" class="flex gap-2 w-full mb-1"></div>
+                <div class="flex gap-2 w-full h-96 overflow-y-auto p-2 bg-gray-900 border border-gray-700 rounded-xl shadow-inner mb-4" id="cleric-tree-container">
+                    <!-- Javascript Populated Columns -->
+                </div>
+            </div>
+
+            <!-- Archer Tree -->
+            <div id="tree-archer" class="hidden w-full">
+                <div class="flex justify-between items-center mb-2">
+                    <p class="text-xs text-gray-400">Choose a path! Grants random Enhancements.</p>
+                    <div class="text-sm font-bold text-white bg-gray-800 px-2 py-1 rounded shadow-inner border border-gray-700">Prog: <span id="tree-progress-archer" class="text-sky-400">0</span></div>
+                </div>
+                <div id="archer-tree-header" class="flex gap-2 w-full mb-1"></div>
+                <div class="flex gap-2 w-full h-96 overflow-y-auto p-2 bg-gray-900 border border-gray-700 rounded-xl shadow-inner mb-4" id="archer-tree-container">
+                    <!-- Javascript Populated Columns -->
+                </div>
+            </div>
+
+            <div id="skill-tree-enhancements" class="w-full mt-4"></div>
+
+        </div>
+    </div>
+
+    <!-- ENCHANTER SCREEN -->
+    <div id="screen-enchanter" class="screen py-8">
+        <div class="w-full max-w-xl px-4 flex flex-col h-full">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex gap-2">
+                    <button onclick="showMerchants()" class="btn-back self-start text-purple-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Merchants</button>
+                    <button onclick="showHub()" class="btn-back text-gray-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>🏠</span> Town</button>
+                </div>
+            </div>
+            
+            <h2 class="text-3xl font-bold mb-2 text-purple-400 text-center tracking-widest">THE ENCHANTER</h2>
+            <p class="text-gray-400 mb-6 text-sm text-center">Use Enchanting Cores to permanently boost equipped gear. <br>Gear can only be enchanted <span class="text-white font-bold">once</span>!</p>
+
+            <div id="ench-list" class="flex flex-col gap-3">
+                <!-- Javascript populated list of equipped gear -->
+            </div>
+            <div id="ench-core-merge" class="mt-6 flex flex-col gap-3">
+                <!-- Soul Core Fusion section populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ALCHEMIST (Crafting Potions) -->
+    <div id="screen-alchemist" class="screen py-8"><div class="w-full max-w-xl px-4 flex flex-col h-full"><div class="flex justify-between items-center mb-6"><div class="flex gap-2"><button onclick="showMerchants()" class="btn-back self-start text-green-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Merchants</button><button onclick="showHub()" class="btn-back text-gray-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>🏠</span> Town</button></div><div class="flex gap-2"><div class="text-sm font-bold text-yellow-500 bg-gray-800 px-3 py-1 rounded-full border border-gray-700 shadow-md">💰 <span id="alch-gold-display">0</span></div><div class="text-sm font-bold text-green-400 bg-gray-800 px-3 py-1 rounded-full border border-gray-700 shadow-md">🌺 <span id="alch-herb-red">0</span> | 💠 <span id="alch-herb-blue">0</span></div></div></div><h2 class="text-3xl font-bold mb-4 text-green-400 text-center tracking-widest">THE ALCHEMIST</h2><p class="text-xs text-gray-400 text-center mb-6">Use herbs gathered from the Wilds to craft potent elixirs.</p><div id="alch-craft-list" class="grid grid-cols-1 gap-3"></div></div></div>
+
+    <!-- CHEF (Crafting Foods) -->
+    <div id="screen-chef" class="screen py-8"><div class="w-full max-w-xl px-4 flex flex-col h-full"><div class="flex justify-between items-center mb-6"><div class="flex gap-2"><button onclick="showMerchants()" class="btn-back self-start text-orange-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Merchants</button><button onclick="showHub()" class="btn-back text-gray-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>🏠</span> Town</button></div><div class="text-sm font-bold text-yellow-500 bg-gray-800 px-3 py-1 rounded-full border border-gray-700 shadow-md">💰 <span id="chef-gold-display">0</span></div></div><h2 class="text-3xl font-bold mb-2 text-orange-400 text-center tracking-widest">THE CHEF</h2><p class="text-xs text-gray-400 text-center mb-6">Bring fresh fish and Gold to cook powerful combat buffs!</p><div id="chef-craft-list" class="grid grid-cols-1 gap-3"></div><div id="chef-log" class="text-center text-yellow-400 font-bold mt-4 h-6"></div></div></div>
+
+    <div id="screen-well" class="screen py-8">
+        <div class="w-full max-w-xl px-4 flex flex-col h-full">
+            <div class="flex justify-between items-center mb-6">
+                <button onclick="showHub()" class="btn-back self-start text-cyan-300 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Town</button>
+                <div class="text-sm font-bold text-yellow-500 bg-gray-800 px-3 py-1 rounded-full border border-gray-700 shadow-md">💰 <span id="well-gold-display">0</span></div>
+            </div>
+            <h2 class="text-3xl font-bold mb-2 text-cyan-300 text-center tracking-widest">THE WELL</h2>
+            <p class="text-xs text-gray-400 text-center mb-4">Blessings cost 20 Gold each. Combat buffs last for your next 10 battles.</p>
+            <div class="bg-gray-900 border border-cyan-800 rounded-xl p-3 mb-4 text-xs text-gray-300">
+                <div class="flex justify-between"><span>💠 XP Blessing:</span><span id="well-xp-status" class="font-bold text-yellow-300">Inactive</span></div>
+                <div class="flex justify-between"><span>🎁 Drop Blessing:</span><span id="well-drop-status" class="font-bold text-purple-300">Inactive</span></div>
+                <div class="flex justify-between"><span>⚡ Energy (50g):</span><span id="well-energy50-status" class="font-bold text-blue-300">Ready</span></div>
+                <div class="flex justify-between"><span>⚡ Energy (100g):</span><span id="well-energy100-status" class="font-bold text-blue-300">Ready</span></div>
+            </div>
+            <div class="grid grid-cols-1 gap-3">
+                <button id="well-heal-btn" onclick="useWellHeal()" class="bg-green-800 hover:bg-green-700 border border-green-500 p-4 rounded-xl text-left disabled:opacity-50">
+                    <div class="font-bold text-green-200">💧 Full Heal (100% HP) — 50 Gold</div>
+                    <div class="text-[11px] text-gray-300">Fully restores your HP. Can be used anytime.</div>
+                </button>
+                <button id="well-xp-btn" onclick="buyWellXpBuff()" class="bg-yellow-800 hover:bg-yellow-700 border border-yellow-500 p-4 rounded-xl text-left disabled:opacity-50">
+                    <div class="font-bold text-yellow-200">⚡ 5x XP Blessing — 20 Gold</div>
+                    <div class="text-[11px] text-gray-300">Applies to your next 10 completed battles. Once per day.</div>
+                </button>
+                <button id="well-drop-btn" onclick="buyWellDropBuff()" class="bg-purple-800 hover:bg-purple-700 border border-purple-500 p-4 rounded-xl text-left disabled:opacity-50">
+                    <div class="font-bold text-purple-200">🎁 5x Drop Rate Blessing — 20 Gold</div>
+                    <div class="text-[11px] text-gray-300">5x drop chance rolls for your next 10 completed battles. Once per day.</div>
+                </button>
+                <button id="well-energy50-btn" onclick="useWellEnergy50()" class="bg-blue-800 hover:bg-blue-700 border border-blue-500 p-4 rounded-xl text-left disabled:opacity-50">
+                    <div class="font-bold text-blue-200">⚡ Refill Energy — 50 Gold</div>
+                    <div class="text-[11px] text-gray-300">Refills your energy to max. Can be used once per day.</div>
+                </button>
+                <button id="well-energy100-btn" onclick="useWellEnergy100()" class="bg-blue-900 hover:bg-blue-800 border border-blue-400 p-4 rounded-xl text-left disabled:opacity-50">
+                    <div class="font-bold text-blue-100">⚡ Refill Energy — 100 Gold</div>
+                    <div class="text-[11px] text-gray-300">Refills your energy to max. Can be used once per day.</div>
+                </button>
+            </div>
+            <div id="well-log" class="text-center text-cyan-300 font-bold mt-4 min-h-6"></div>
+        </div>
+    </div>
+
+    <!-- GENERAL SHOP -->
+    <div id="screen-shop" class="screen py-8">
+        <div class="w-full max-w-xl px-4 flex flex-col h-full">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex gap-2">
+                    <button onclick="showMerchants()" class="btn-back self-start text-gray-300 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Merchants</button>
+                    <button onclick="showHub()" class="btn-back text-gray-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>🏠</span> Town</button>
+                </div>
+                <div class="text-xl font-bold text-yellow-500 bg-gray-800 px-4 py-1 rounded-full border border-gray-700 shadow-md">💰 <span id="shop-gold-display">0</span></div>
+            </div>
+            <h2 class="text-3xl font-bold mb-4 text-gray-300 text-center tracking-widest">GENERAL SHOP</h2>
+            
+            <div class="flex justify-between items-end mb-2 border-b border-gray-700 pb-1">
+                <h3 class="font-bold text-blue-400">Daily Equipment</h3>
+                <button onclick="refreshShopGear()" class="text-xs bg-blue-800 hover:bg-blue-700 text-white px-2 py-1 rounded shadow-md border border-blue-600 transition active:scale-95">Refresh (20G)</button>
+            </div>
+            <div class="grid grid-cols-1 gap-2 mb-6" id="shop-gear-list"></div>
+
+            <div class="bg-gray-800 border border-purple-800 rounded-xl p-4 mb-6 shadow-inner flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-purple-300 flex items-center gap-2"><span class="text-2xl">🎫</span> Dungeon Ticket</h3>
+                    <p class="text-xs text-gray-400">Required to enter Dungeons.</p>
+                    <div class="text-xs font-bold text-white mt-1">Owned: <span id="shop-owned-tickets">0</span></div>
+                </div>
+                <button onclick="buyTicket()" class="bg-purple-700 hover:bg-purple-600 px-4 py-2 rounded font-bold disabled:bg-gray-600 text-sm flex flex-col items-center transition active:scale-95 shadow-md"><span>BUY</span><span class="text-yellow-400 text-xs">💰 100</span></button>
+            </div>
+            
+            <h3 class="font-bold text-orange-400 mb-2 border-b border-gray-700 pb-1">Sell Gear</h3>
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 mb-6 shadow-inner" id="shop-sell-list"></div>
+        </div>
+    </div>
+
+    <!-- CODEX -->
+    <div id="screen-codex" class="screen py-8">
+        <div class="w-full max-w-xl px-4 flex flex-col h-full">
+            <div class="flex justify-between items-center mb-6">
+                <button onclick="showHub()" class="btn-back self-start text-stone-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Town</button>
+                <button onclick="claimAllCodexRewards()" class="bg-yellow-600 hover:bg-yellow-500 active:scale-95 text-black font-bold px-3 py-2 rounded-lg text-xs transition shadow-md">Claim All (Non-Mythic)</button>
+                <div class="text-xl font-bold text-yellow-500 bg-gray-800 px-4 py-1 rounded-full border border-gray-700 shadow-md">💰 <span id="codex-gold-display">0</span></div>
+            </div>
+            
+            <h2 class="text-3xl font-bold mb-2 text-stone-300 text-center tracking-widest">ENEMY CODEX</h2>
+            <p class="text-gray-400 text-center mb-6 text-sm">Discover enemies to earn 20 Gold.</p>
+            <div id="codex-list" class="grid grid-cols-2 md:grid-cols-3 gap-3"></div>
+        </div>
+    </div>
+
+    <!-- PET CODEX -->
+    <div id="screen-pet-codex" class="screen py-8">
+        <div class="w-full max-w-xl px-4 flex flex-col h-full">
+            <div class="flex justify-between items-center mb-6">
+                <button onclick="showHub()" class="btn-back self-start text-pink-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Town</button>
+                <div class="text-xl font-bold text-yellow-500 bg-gray-800 px-4 py-1 rounded-full border border-gray-700 shadow-md">💰 <span id="pet-gold-display">0</span></div>
+            </div>
+            <h2 class="text-3xl font-bold mb-2 text-pink-400 text-center tracking-widest">PET BATTLE CODEX</h2>
+            <p class="text-gray-400 text-center mb-2 text-sm">Discover pets to earn 20 Gold each.</p>
+            <p class="text-yellow-500 text-center mb-6 text-xs font-bold">Ultimate Reward: 10,000 Gold for discovering all pets!</p>
+            <div id="pet-codex-list" class="grid grid-cols-2 md:grid-cols-3 gap-3"></div>
+        </div>
+    </div>
+
+    <!-- QUESTS -->
+    <div id="screen-quests" class="screen py-8">
+        <div class="w-full max-w-xl px-4 flex flex-col h-full">
+            <button onclick="showHub()" class="btn-back self-start mb-6 text-yellow-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Town</button>
+            <div class="flex justify-between items-end mb-4 border-b border-yellow-700 pb-2">
+                <h2 class="text-3xl font-bold text-yellow-400 tracking-widest">QUEST BOARD</h2>
+                <div class="text-xs text-gray-400 text-right">Daily Limit:<br><span id="quest-daily-limit" class="text-white font-bold text-sm">0/10</span></div>
+            </div>
+            <div id="quest-container-1"></div>
+            <div id="quest-container-2"></div>
+            <div id="quest-container-3"></div>
+            <div id="quest-container-4"></div>
+
+        </div>
+    </div>
+    
+    <!-- DUNGEONS -->
+    <div id="screen-dungeons" class="screen py-8">
+        <div class="w-full max-w-xl px-4 flex flex-col h-full">
+            <div class="flex justify-between items-center mb-6">
+                <button onclick="showPortal()" class="btn-back text-red-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Portal</button>
+                <div class="flex gap-2">
+                    <div class="text-sm font-bold text-yellow-500 bg-gray-800 px-3 py-1 rounded-full border border-yellow-700 shadow-md">💰 <span id="dungeon-gold-display">0</span></div>
+                    <div class="text-sm font-bold text-blue-300 bg-gray-800 px-3 py-1 rounded-full border border-blue-800 shadow-md">🎫 <span id="dungeon-tickets-display">0</span> Tickets</div>
+                </div>
+            </div>
+            <h2 class="text-3xl font-bold mb-2 text-red-500 text-center tracking-widest drop-shadow-md">DUNGEONS</h2>
+            <p class="text-gray-400 mb-4 text-sm text-center bg-gray-900 py-2 rounded-lg border border-red-900">Survive 5 waves of Extra-Terrestrial horrors. Costs 1 🎫. <br><span class="text-red-400 font-bold">Warning: High difficulty!</span></p>
+            <div class="bg-gray-800 border border-purple-800 rounded-xl p-4 mb-6 shadow-inner flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-purple-300 flex items-center gap-2"><span class="text-2xl">🎫</span> Dungeon Ticket</h3>
+                    <p class="text-xs text-gray-400">Required for entry.</p>
+                </div>
+                <button id="btn-buy-ticket-dungeon" onclick="buyTicket('dungeon')" class="bg-purple-700 hover:bg-purple-600 px-4 py-2 rounded font-bold disabled:bg-gray-600 text-sm flex flex-col items-center transition active:scale-95 shadow-md"><span>BUY</span><span class="text-yellow-400 text-xs">💰 100</span></button>
+            </div>
+            <div id="dungeon-list" class="flex flex-col gap-3"></div>
+        </div>
+    </div>
+
+    <!-- GRAVEYARD -->
+    <div id="screen-graveyard" class="screen py-8">
+        <div class="w-full max-w-xl px-4 flex flex-col h-full">
+            <div class="flex justify-between items-center mb-6">
+                <button onclick="showHub()" class="btn-back text-gray-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Town</button>
+                <div class="text-sm font-bold text-yellow-500 bg-gray-800 px-3 py-1 rounded-full border border-gray-700 shadow-md">💰 <span id="graveyard-gold-display">0</span></div>
+            </div>
+            <h2 class="text-3xl font-bold mb-2 text-gray-400 text-center tracking-widest drop-shadow-md">GRAVEYARD</h2>
+            <p class="text-gray-500 mb-6 text-sm text-center bg-gray-900 py-2 rounded-lg border border-gray-800">Resurrect and fight defeated bosses for <span class="text-purple-400 font-bold">Soul Pebbles</span>. Costs 20G per fight.</p>
+            
+            <div id="graveyard-list" class="flex flex-col gap-3"></div>
+        </div>
+    </div>
+
+    <!-- COMBAT SCREEN -->
+    <div id="screen-combat" class="screen" style="background: #1a1a2e; padding-bottom: 0;">
+        <div class="w-full max-w-6xl px-2 flex flex-col h-full py-2">
+            <div class="flex justify-between items-center mb-1 px-2">
+                <div class="flex items-center gap-2">
+                    <button onclick="fleeBattle()" class="bg-red-900 hover:bg-red-800 text-red-200 px-3 py-1 rounded-full text-xs font-bold border border-red-700 active:scale-95 shadow-lg transition">LEAVE</button>
+                    <div class="text-yellow-400 font-bold text-lg" id="ui-level">Level 1</div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="text-gray-300 font-bold text-xs bg-gray-800 px-2 py-1 rounded border border-gray-600" id="ui-mode-badge">Quest</div>
+                    <button onclick="openCombatBag()" class="bg-orange-800 text-orange-200 hover:bg-orange-700 px-3 py-1 rounded-full text-xs font-bold border border-orange-500 transition active:scale-95 shadow-md">🎒 BAG</button>
+                    <button id="btn-auto" onclick="toggleAuto()" class="bg-gray-700 text-gray-300 px-3 py-1 rounded-full text-xs font-bold border border-gray-500 transition active:scale-95 shadow-md">AUTO</button>
+                </div>
+            </div>
+
+            <div class="w-full flex gap-1 mb-2 overflow-x-auto pb-1" id="combat-consumables-container" style="display:none!important"></div>
+
+            <div class="combat-dashboard">
+                <!-- ENEMY INFO PANEL -->
+                <div id="target-info-panel" class="w-full bg-gray-800 bg-opacity-90 p-2 rounded-lg border border-gray-600 flex justify-between items-center shadow-lg">
+                    <div class="flex items-center gap-3">
+                        <div id="target-info-avatar" class="text-3xl drop-shadow-md"></div>
+                        <div>
+                            <div id="target-info-name" class="font-bold text-sm text-white leading-tight"></div>
+                            <div id="target-info-stats" class="text-[10px] text-gray-400 font-mono"></div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[10px] font-bold text-blue-300 uppercase tracking-widest border-b border-gray-600 mb-0.5">Known Skills</div>
+                        <div id="target-info-skills" class="text-[9px] text-gray-300 leading-tight uppercase"></div>
+                    </div>
+                </div>
+
+                <!-- Enemies Row -->
+                <div id="enemies-container" class="flex flex-wrap gap-2 w-full justify-center my-6 min-h-[120px]"></div>
+                <div id="next-battle-container" class="w-full flex justify-center" style="display:none;">
+                    <button onclick="endBattle(true)" class="btn-next-battle bg-yellow-600 hover:bg-yellow-500 text-black font-black px-6 py-2 rounded-full border-2 border-yellow-400 transition active:scale-95 text-sm">⏭️ Next Battle</button>
+                </div>
+
+                <!-- Battle Log -->
+                <div class="flex flex-col">
+                    <div class="text-center text-xs font-bold text-gray-400 bg-gray-900 border border-gray-800 rounded-t-xl py-1 uppercase tracking-widest">Battle Log</div>
+                    <div id="combat-log" class="w-full bg-black bg-opacity-60 text-center p-2 text-xs text-gray-300 overflow-y-auto flex flex-col gap-1 rounded-b-xl border-x border-b border-gray-800 shadow-inner"></div>
+                </div>
+
+                <!-- Player Status + Usables -->
+                <div class="player-status-card">
+                    <div class="relative w-1/4 flex justify-center items-center" id="player-avatar-container">
+                        <div class="fighter-avatar text-4xl drop-shadow-md" id="combat-player-avatar">🧑</div>
+                        <div id="player-stun-indicator" class="absolute -top-3 text-xl hidden">😵</div>
+                    </div>
+                    <div class="w-3/4 pl-3 relative">
+                        <div id="player-shield-indicator" class="absolute -top-1 right-0 text-xl hidden">🛡️</div><div id="player-regen-indicator" class="absolute -top-1 right-8 text-xl hidden animate-pulse">💖</div><div id="player-dizzy-indicator" class="absolute -top-1 right-16 text-xl hidden animate-pulse">💫</div>
+                        <div class="flex justify-between items-end"><div class="text-md font-bold text-blue-400"><button onclick="showProgressMenu()" class="text-xs text-gray-400 font-normal hover:text-yellow-400 transition cursor-pointer" id="combat-player-class">Class</button></div><div class="text-xs font-mono text-gray-300" id="combat-player-hp-text">100/100</div></div>
+                        <div class="flex items-center gap-1 mt-0.5"><span class="text-xs font-bold text-red-400">HP</span><div class="health-bar-container flex-1"><div id="combat-player-hp" class="health-bar"></div></div></div><div class="flex items-center gap-1 mt-0.5"><span class="text-xs font-bold text-yellow-400">XP</span><div class="xp-bar-container flex-1 !h-1 !mt-0" id="combat-xp-bar-container"><div id="combat-player-xp" class="xp-bar"></div></div></div><div class="flex gap-1 mt-1" id="combat-active-buffs"></div>
+                    </div>
+                </div>
+
+                <!-- Turn Indicator + Skills -->
+                <div class="w-full pb-1">
+                    <div class="text-center text-xs mb-1 text-gray-400 uppercase tracking-widest font-bold" id="turn-indicator">Your Turn</div>
+                    <div class="flex flex-col gap-1" id="skills-container">
+                        <!-- Static fallback – replaced at runtime by renderSkills() -->
+                        <div class="skills-grid">
+                            <button type="button" class="skill skill-1 skill-slot skill-btn-thin w-full py-1 px-2 rounded-lg font-bold text-white shadow-lg bg-gray-700 relative"><span class="skill-label">Skill 1</span></button>
+                            <button type="button" class="skill skill-2 skill-btn flex-1 p-2 rounded-lg font-bold text-white shadow-lg bg-gray-700"></button>
+                            <button type="button" class="skill skill-3 skill-btn flex-1 p-2 rounded-lg font-bold text-white shadow-lg bg-gray-700"></button>
+                            <button type="button" class="skill skill-4 skill-btn flex-1 p-2 rounded-lg font-bold text-white shadow-lg bg-gray-700"></button>
+                            <button type="button" class="skill skill-5 skill-btn flex-1 p-2 rounded-lg font-bold text-white shadow-lg bg-gray-700"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full" id="combat-usable-slots-container">
+                    <div class="flex gap-1 justify-center" id="combat-usable-slots"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- POST BATTLE SCREEN -->
+    <div id="screen-end" class="screen py-10">
+        <h1 id="end-title" class="text-5xl font-bold mb-2 drop-shadow-lg">VICTORY</h1>
+        <p id="end-desc" class="mb-4 text-lg text-gray-300">Enemies defeated.</p>
+        <div id="rewards-container" class="flex gap-2 mb-4 flex-wrap justify-center w-full max-w-md"></div>
+        <div id="xp-gain-container" class="w-full max-w-xs mb-8 bg-gray-900 p-4 rounded-xl text-center shadow-lg border border-gray-700">
+            <div class="text-yellow-400 mb-2 font-bold">+<span id="end-xp-amount">0</span> XP</div>
+            <div class="xp-bar-container mb-1"><div id="end-xp-bar" class="xp-bar"></div></div>
+            <div id="levelup-text" class="text-green-400 font-bold text-lg h-6 animate-bounce hidden mt-2">LEVEL UP! (+5 Stat)</div>
+            <div id="skillpoint-text" class="text-purple-400 font-bold text-md h-6 animate-pulse hidden">Gained 1 Skill Point!</div>
+        </div>
+        <div class="flex flex-col gap-3 w-full max-w-xs">
+            <button id="btn-end-next" onclick="handleEndNext()" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-xl text-xl font-bold transition active:scale-95 shadow-[0_0_15px_rgba(37,99,235,0.5)] hidden border border-blue-400">Continue</button>
+            <button id="btn-end-hub" onclick="returnToTown()" class="w-full py-4 bg-gray-800 hover:bg-gray-700 rounded-xl text-xl font-bold transition shadow-lg border border-gray-600 active:scale-95">Return to Goldcrest Town</button>
+        </div>
+    </div>
+
+    <!-- PROGRESS MENU MODAL -->
+    <div id="modal-progress" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80" style="display:none;">
+        <div class="bg-gray-900 border border-yellow-700 rounded-2xl p-5 w-full max-w-sm shadow-2xl mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-black text-yellow-400 tracking-widest" id="progress-menu-class">Progress</h2>
+                <button onclick="closeProgressMenu()" class="text-gray-400 hover:text-white text-2xl leading-none active:scale-95 transition">✕</button>
+            </div>
+            <div id="progress-menu-rows" class="max-h-96 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- PORTAL MENU -->
+    <div id="screen-portal" class="screen py-8">
+        <div class="w-full max-w-xl px-4 flex flex-col h-full">
+            <button onclick="showHub()" class="btn-back self-start mb-6 text-red-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Town</button>
+            <h2 class="text-3xl font-bold mb-2 text-red-400 text-center tracking-widest drop-shadow-md">🌌 PORTAL</h2>
+            <p class="text-xs text-gray-400 text-center mb-6">Choose your adventure through the Portal.</p>
+            <div class="flex flex-col gap-4">
+                <button onclick="showDungeons()" class="bg-gray-800 hover:bg-gray-700 border border-red-800 hover:border-red-500 p-5 rounded-xl flex items-center gap-4 transition active:scale-95 shadow-lg">
+                    <span class="text-4xl">🌌</span>
+                    <div class="text-left">
+                        <div class="font-bold text-red-400 text-lg">Dungeons</div>
+                        <div class="text-xs text-gray-400">Survive 5 waves for rewards. Costs 1 Ticket.</div>
+                    </div>
+                </button>
+                <button onclick="showInvasion()" class="bg-gray-800 hover:bg-gray-700 border border-orange-800 hover:border-orange-500 p-5 rounded-xl flex items-center gap-4 transition active:scale-95 shadow-lg">
+                    <span class="text-4xl">⚔️</span>
+                    <div class="text-left">
+                        <div class="font-bold text-orange-400 text-lg">Invasion</div>
+                        <div class="text-xs text-gray-400">Fight 10 level-500 enemies. Costs 1 Ticket. High rewards!</div>
+                    </div>
+                </button>
+                <button onclick="showPetBattle()" class="bg-gray-800 hover:bg-gray-700 border border-pink-800 hover:border-pink-500 p-5 rounded-xl flex items-center gap-4 transition active:scale-95 shadow-lg">
+                    <span class="text-4xl">🐾</span>
+                    <div class="text-left">
+                        <div class="font-bold text-pink-400 text-lg">Pet Battles</div>
+                        <div class="text-xs text-gray-400">Rock-Paper-Scissors with pets! Win gold & XP.</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WORKSHOP SCREEN -->
+    <div id="screen-workshop" class="screen py-8" style="overflow-y:auto;">
+        <div class="w-full max-w-xl px-4 flex flex-col pb-8">
+            <div class="flex gap-2 mb-6">
+                <button onclick="showMerchants()" class="btn-back self-start text-cyan-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Merchants</button>
+                <button onclick="showHub()" class="btn-back text-gray-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>🏠</span> Town</button>
+            </div>
+            <h2 class="text-3xl font-bold mb-1 text-cyan-400 text-center tracking-widest drop-shadow-md">⚒️ THE WORKSHOP</h2>
+            <div class="flex justify-center gap-3 mb-2">
+                <div class="text-sm font-bold text-purple-300 bg-gray-800 px-3 py-1 rounded-full border border-purple-700">🔮 Soul Pebbles: <span id="workshop-pebbles">0</span></div>
+            </div>
+            <p class="text-xs text-gray-400 text-center mb-6 bg-gray-900 py-2 rounded-lg border border-gray-700">Use Soul Pebbles to scale your Mythic gear to your current level.</p>
+            <div id="workshop-items-list" class="flex flex-col gap-3"></div>
+        </div>
+    </div>
+
+    <!-- BURGLAR SCREEN -->
+    <div id="screen-burglar" class="screen py-8" style="overflow-y:auto;">
+        <div class="w-full max-w-xl px-4 flex flex-col pb-8">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex gap-2">
+                    <button onclick="showMerchants()" class="btn-back text-red-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Merchants</button>
+                    <button onclick="showHub()" class="btn-back text-gray-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>🏠</span> Town</button>
+                </div>
+                <div class="flex gap-2 items-center">
+                    <div class="text-sm font-bold text-yellow-400 bg-gray-800 px-3 py-1 rounded-full border border-yellow-700">💰 <span id="burglar-gold-display">0</span></div>
+                    <div class="text-xs font-bold text-gray-300 bg-gray-800 px-2 py-1 rounded border border-gray-600">Purchases: <span id="burglar-daily-count">0</span>/2</div>
+                </div>
+            </div>
+            <h2 class="text-3xl font-bold mb-1 text-red-400 text-center tracking-widest drop-shadow-md">🗡️ THE BURGLAR</h2>
+            <p class="text-xs text-gray-500 text-center mb-4 italic">...a shady figure lurks in the shadows...</p>
+            <p class="text-xs text-gray-400 text-center mb-4 bg-gray-900 py-2 rounded-lg border border-gray-700">Usable items for combat. Items go to your bag and can be placed in usable slots.<br><span class="text-yellow-400">Max 2 purchases per day.</span></p>
+            <div id="burglar-items-list" class="flex flex-col gap-3"></div>
+        </div>
+    </div>
+
+    <!-- INVASION SCREEN -->
+    <div id="screen-invasion" class="screen py-8">
+        <div class="w-full max-w-xl px-4 flex flex-col h-full">
+            <div class="flex justify-between items-center mb-6">
+                <button onclick="showPortal()" class="btn-back text-orange-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Portal</button>
+                <div class="flex gap-2">
+                    <div class="text-sm font-bold text-yellow-500 bg-gray-800 px-3 py-1 rounded-full border border-yellow-700 shadow-md">💰 <span id="invasion-gold-display">0</span></div>
+                    <div class="text-sm font-bold text-blue-300 bg-gray-800 px-3 py-1 rounded-full border border-blue-800 shadow-md">🎫 <span id="invasion-tickets-display">0</span></div>
+                </div>
+            </div>
+            <h2 class="text-3xl font-bold mb-2 text-orange-400 text-center tracking-widest drop-shadow-md">⚔️ INVASION</h2>
+            <p class="text-gray-400 mb-4 text-sm text-center bg-gray-900 py-2 rounded-lg border border-orange-900">
+                Face 10 level-500 enemies in waves. Costs 1 🎫.<br>
+                <span class="text-yellow-400">30 Gold + 1 Usable item per kill.</span> <span class="text-purple-400">1 Soul Pebble on completion!</span>
+            </p>
+            <div class="bg-gray-800 border border-orange-800 rounded-xl p-4 mb-6 shadow-inner">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-orange-300 flex items-center gap-2"><span class="text-2xl">🎫</span> Dungeon Ticket Required</h3>
+                    <button onclick="buyTicket('dungeon')" class="bg-purple-700 hover:bg-purple-600 px-3 py-1 rounded font-bold text-sm transition active:scale-95">BUY 💰100</button>
+                </div>
+                <button onclick="startInvasion()" class="w-full bg-orange-700 hover:bg-orange-600 text-white font-black py-4 rounded-xl text-xl transition active:scale-95 shadow-lg border-2 border-orange-400">
+                    ⚔️ BEGIN INVASION
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PET BATTLE SCREEN -->
+    <div id="screen-pet-battle" class="screen py-4" style="overflow-y:auto;">
+        <div class="w-full max-w-xl px-4 flex flex-col pb-8">
+            <div class="flex justify-between items-center mb-4">
+                <button onclick="showPortal()" class="btn-back text-pink-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Portal</button>
+                <div class="text-sm font-bold text-yellow-400 bg-gray-800 px-3 py-1 rounded-full border border-yellow-700">💰 <span id="pet-battle-gold-display">0</span></div>
+            </div>
+            <h2 class="text-3xl font-bold mb-1 text-pink-400 text-center tracking-widest drop-shadow-md">🐾 PET BATTLES</h2>
+            <p class="text-xs text-gray-400 text-center mb-4">Rock-Paper-Scissors style! Win 50 Gold + 1% XP per win.</p>
+
+            <!-- Pet Select Area -->
+            <div id="pet-select-area">
+                <div class="bg-gray-900 border border-pink-800 rounded-xl p-4 mb-4">
+                    <h3 class="font-bold text-pink-300 mb-3 text-center">Choose Your Pet</h3>
+                    <div id="pet-owned-list" class="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto"></div>
+                    <p id="pet-no-pets-msg" class="text-gray-500 text-center py-4 text-sm hidden">No pets yet! Pets have a 5% drop chance in any game mode.</p>
+                </div>
+                <div class="bg-gray-900 border border-gray-700 rounded-xl p-4 mb-4">
+                    <h3 class="font-bold text-gray-300 mb-2 text-sm text-center uppercase tracking-widest">Battle Rules</h3>
+                    <div class="grid grid-cols-3 gap-1 text-[10px] text-gray-400 mb-2">
+                        <div class="bg-gray-800 rounded p-1 text-center">⚔️ vs ⚔️<br><span class="text-white">Both -1 HP</span></div>
+                        <div class="bg-gray-800 rounded p-1 text-center">⚔️ vs 🛡️<br><span class="text-orange-300">Attacker -0.5</span></div>
+                        <div class="bg-gray-800 rounded p-1 text-center">⚔️ vs 🔄<br><span class="text-orange-300">Attacker -1</span></div>
+                        <div class="bg-gray-800 rounded p-1 text-center">🛡️ vs ⚔️<br><span class="text-orange-300">Attacker -0.5</span></div>
+                        <div class="bg-gray-800 rounded p-1 text-center">🛡️ vs 🛡️<br><span class="text-yellow-300">Both -0.5</span></div>
+                        <div class="bg-gray-800 rounded p-1 text-center">🛡️ vs 🔄<br><span class="text-green-300">Counter -1.5</span></div>
+                        <div class="bg-gray-800 rounded p-1 text-center">🔄 vs ⚔️<br><span class="text-orange-300">Counter -1</span></div>
+                        <div class="bg-gray-800 rounded p-1 text-center">🔄 vs 🛡️<br><span class="text-red-300">Counter -1.5</span></div>
+                        <div class="bg-gray-800 rounded p-1 text-center">🔄 vs 🔄<br><span class="text-yellow-300">Both -0.5</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Battle Area -->
+            <div id="pet-battle-area" class="hidden">
+                <div class="bg-gray-900 border border-pink-800 rounded-xl p-4 mb-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="text-center flex-1">
+                            <div id="pb-player-emoji" class="text-5xl mb-1">🐾</div>
+                            <div id="pb-player-name" class="font-bold text-pink-300 text-sm">Your Pet</div>
+                            <div class="text-xs text-gray-400 mt-1">HP: <span id="pb-player-hp" class="text-green-400 font-bold">10</span>/10</div>
+                            <div class="w-full bg-gray-700 rounded-full h-2 mt-1"><div id="pb-player-hp-bar" class="bg-green-500 h-2 rounded-full transition-all" style="width:100%"></div></div>
+                        </div>
+                        <div class="text-2xl font-black text-gray-500 px-4">VS</div>
+                        <div class="text-center flex-1">
+                            <div id="pb-enemy-emoji" class="text-5xl mb-1">❓</div>
+                            <div id="pb-enemy-name" class="font-bold text-orange-300 text-sm">Enemy Pet</div>
+                            <div class="text-xs text-gray-400 mt-1">HP: <span id="pb-enemy-hp" class="text-green-400 font-bold">10</span>/10</div>
+                            <div class="w-full bg-gray-700 rounded-full h-2 mt-1"><div id="pb-enemy-hp-bar" class="bg-green-500 h-2 rounded-full transition-all" style="width:100%"></div></div>
+                        </div>
+                    </div>
+                    <div id="pb-result-text" class="text-center font-bold text-sm mb-3 min-h-8 text-yellow-300"></div>
+                </div>
+                <div class="bg-gray-900 border border-gray-700 rounded-xl p-3 mb-4">
+                    <div class="text-xs text-center text-gray-400 mb-2 uppercase tracking-widest">Choose your action:</div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button id="pb-btn-attack" onclick="petBattleAction('attack')" class="bg-red-900 hover:bg-red-800 border border-red-600 py-3 rounded-xl font-bold text-white transition active:scale-95 flex flex-col items-center">
+                            <span class="text-2xl">⚔️</span><span class="text-xs mt-1">Attack</span>
+                        </button>
+                        <button id="pb-btn-block" onclick="petBattleAction('block')" class="bg-blue-900 hover:bg-blue-800 border border-blue-600 py-3 rounded-xl font-bold text-white transition active:scale-95 flex flex-col items-center">
+                            <span class="text-2xl">🛡️</span><span class="text-xs mt-1">Block</span>
+                        </button>
+                        <button id="pb-btn-counter" onclick="petBattleAction('counter')" class="bg-yellow-900 hover:bg-yellow-800 border border-yellow-600 py-3 rounded-xl font-bold text-white transition active:scale-95 flex flex-col items-center">
+                            <span class="text-2xl">🔄</span><span class="text-xs mt-1">Counter</span>
+                        </button>
+                    </div>
+                    <div id="pb-cooldown-info" class="text-xs text-gray-500 text-center mt-2"></div>
+                </div>
+                <button onclick="leavePetBattle()" class="w-full bg-gray-800 hover:bg-gray-700 border border-gray-600 py-3 rounded-xl font-bold text-gray-300 transition active:scale-95">Leave Battle</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
