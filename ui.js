@@ -2915,21 +2915,6 @@ function updateCombatUI() {
         if(nextBattleBtn) nextBattleBtn.style.display = (combatActive && enemies.length > 0 && enemies.every(e => e.currentHp <= 0)) ? 'flex' : 'none';
     }
 
-    // Update Target Info Panel
-    const infoPanel = document.getElementById('target-info-panel');
-    if (infoPanel && enemies[activeTargetIndex] && currentMode !== 'quest') {
-        let e = enemies[activeTargetIndex];
-        let rarityColor = (e.rarity === 'mythic' || e.isMythicBoss) ? 'text-white font-black drop-shadow-[0_0_8px_rgba(255,255,255,1)]' : e.rarity === 'legendary' ? 'text-yellow-400' : e.rarity === 'epic' ? 'text-purple-400' : e.rarity === 'rare' ? 'text-blue-400' : e.isBoss ? 'text-red-400' : 'text-gray-300';
-        
-        document.getElementById('target-info-avatar').innerText = e.avatar;
-        document.getElementById('target-info-name').innerHTML = `<span class="${rarityColor}">Lv.${e.lvl} ${e.name}</span>`;
-        document.getElementById('target-info-stats').innerText = `HP: ${Math.max(0, e.currentHp)}/${e.maxHp} | Dmg: ${e.baseDmg}`;
-        document.getElementById('target-info-skills').innerText = getEnemySkillsText(e);
-        infoPanel.classList.remove('hidden');
-    } else if (infoPanel) {
-        infoPanel.classList.add('hidden');
-    }
-
     const turnInd = document.getElementById('turn-indicator');
     if (turnInd) {
         if (isPlayerTurn) { turnInd.innerText = isAutoBattle ? "[AUTO] YOUR TURN" : "YOUR TURN"; turnInd.className = "text-center text-xs mb-1 text-green-400 font-bold uppercase tracking-widest drop-shadow"; } 
