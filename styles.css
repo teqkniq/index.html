@@ -25,10 +25,10 @@ body { margin: 0; padding: 0; overflow: hidden; background-color: #111; color: w
 .xp-bar { height: 100%; background: #eab308; width: 0%; transition: width 0.3s ease-out; }
 
 .fighter-avatar { font-size: 3rem; text-align: center; display: inline-block; position: relative; }
-#enemies-container { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; width: 100%; min-height: 250px; gap: 4px; }
-@media (min-width: 600px) { #enemies-container { min-height: 460px; } .enemy-card .enemy-avatar { font-size: 5rem !important; } }
+#enemies-container { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; width: 100%; min-height: 250px; gap: 8px; }
+@media (min-width: 600px) { #enemies-container { min-height: 460px; } }
 .enemy-card { transition: all 0.2s; position: relative; width: 100%; height: 100%; min-height: 0; }
-.enemy-target { transform: scale(1.05); background: #374151; border-color: #ef4444 !important; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5) !important; }
+.enemy-target { transform: scale(1.03); background: #374151; border-color: #ef4444 !important; box-shadow: 0 0 20px rgba(239, 68, 68, 0.8), 0 0 40px rgba(239, 68, 68, 0.4) !important; }
 .enemy-dead { opacity: 0.5; filter: grayscale(80%); pointer-events: none; }
 .enemy-death-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2.5rem; filter: drop-shadow(0 0 10px #ef4444) drop-shadow(0 0 20px #991b1b); animation: death-pulse 2s infinite ease-in-out; z-index: 10; pointer-events: none; }
 @keyframes death-pulse { 0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.9; filter: drop-shadow(0 0 10px #ef4444) drop-shadow(0 0 20px #991b1b); } 50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; filter: drop-shadow(0 0 20px #ef4444) drop-shadow(0 0 30px #991b1b) drop-shadow(0 0 40px #7f1d1d); } }
