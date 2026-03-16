@@ -1756,7 +1756,7 @@ function startInvasion() {
     invasionTotalKills = 0;
     invasionSpawned = 0;
     invasionKillGoal = 10;
-    invasionMaxOnScreen = 5;
+    invasionMaxOnScreen = 4;
     currentMode = 'invasion';
     saveGame();
     startBattle(true);
@@ -1823,15 +1823,15 @@ function updatePetBattleUI() {
     document.getElementById('pb-enemy-hp-bar').className = `h-2 rounded-full transition-all ${petBattleEnemyHp > 5 ? 'bg-green-500' : petBattleEnemyHp > 2 ? 'bg-yellow-500' : 'bg-red-500'}`;
 
     // Update cooldown info and button visuals
-    let cdText = petBattleLastAction ? `⏱ ${petBattleLastAction.charAt(0).toUpperCase() + petBattleLastAction.slice(1)} is on cooldown for 1 turn` : '';
+    let cdText = (petBattleLastAction && petBattleLastAction !== 'attack') ? `⏱ ${petBattleLastAction.charAt(0).toUpperCase() + petBattleLastAction.slice(1)} is on cooldown for 1 turn` : '';
     document.getElementById('pb-cooldown-info').innerText = cdText;
 
     ['attack', 'block', 'counter'].forEach(action => {
         let btn = document.getElementById(`pb-btn-${action}`);
         if(btn) {
-            btn.disabled = !petBattleActive || (action === petBattleLastAction);
+            btn.disabled = !petBattleActive || (action !== 'attack' && action === petBattleLastAction);
             let lbl = btn.querySelector('.text-xs');
-            if(action === petBattleLastAction && petBattleActive) {
+            if(action !== 'attack' && action === petBattleLastAction && petBattleActive) {
                 btn.classList.add('opacity-50');
                 if(lbl) lbl.innerText = '(1 turn CD)';
             } else {
@@ -1843,7 +1843,7 @@ function updatePetBattleUI() {
 }
 
 function petBattleAction(playerAction) {
-    if(!petBattleActive || playerAction === petBattleLastAction) return;
+    if(!petBattleActive || (playerAction !== 'attack' && playerAction === petBattleLastAction)) return;
 
     // Disable all buttons during animation
     ['attack', 'block', 'counter'].forEach(action => {
@@ -1894,12 +1894,13 @@ function petBattleAction(playerAction) {
 
         petBattlePlayerHp -= playerDmg;
         petBattleEnemyHp -= enemyDmg;
-        petBattleLastAction = playerAction;
+        petBattleLastAction = playerAction === 'attack' ? null : playerAction;
         petBattleEnemyLastAction = enemyAction;
 
         document.getElementById('pb-result-text').innerText = `You: ${actionIcons[playerAction]} | Enemy: ${actionIcons[enemyAction]}\n${resultText}`;
 
         updatePetBattleUI();
+        showRoundResultFlash(playerDmg, enemyDmg);
 
         // Check win/loss
         if(petBattlePlayerHp <= 0 && petBattleEnemyHp <= 0) {
@@ -1995,6 +1996,25 @@ function showPetBattleDefeat() {
     let screen = document.getElementById('screen-pet-battle');
     if(screen) screen.classList.add('anim-screen-shake');
     setTimeout(() => { overlay.remove(); if(screen) screen.classList.remove('anim-screen-shake'); }, 2000);
+}
+
+function showRoundResultFlash(playerDmg, enemyDmg) {
+    let el = document.createElement('div');
+    el.className = 'round-result-flash';
+    if (enemyDmg > playerDmg) {
+        el.style.color = '#4ade80';
+        el.style.borderColor = '#4ade80';
+        el.innerText = '✅ WIN';
+    } else if (playerDmg > enemyDmg) {
+        el.style.color = '#ef4444';
+        el.style.borderColor = '#ef4444';
+        el.innerText = '❌ LOSE';
+    } else {
+        el.style.color = '#9ca3af';
+        el.innerText = '➖ TIE';
+    }
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1200);
 }
 
 function showPetParticle(action) {
@@ -2361,7 +2381,7 @@ function generateEnemies() {
     enemies = [];
     
     if (currentMode === 'quest') { 
-        for(let i=0; i<5; i++) { let e = { shield: 0, healBlock: 0, defReduction: 0, bleedStacks: 0, bleedTurns: 0, burnStacks: 0, burnTurns: 0, poisonStacks: 0, poisonTurns: 0, skipChance: 0, skipTurns: 0, dmgTakenMult: 1, dmgTakenTurns: 0, dodgeTurns: 0, rarity: 'common', lvl: 1, name: 'Weak Target', avatar: '🎯', maxHp: 1, baseDmg: 0, currentHp: 1 }; assignEnemySkills(e); enemies.push(e); } 
+        for(let i=0; i<4; i++) { let e = { shield: 0, healBlock: 0, defReduction: 0, bleedStacks: 0, bleedTurns: 0, burnStacks: 0, burnTurns: 0, poisonStacks: 0, poisonTurns: 0, skipChance: 0, skipTurns: 0, dmgTakenMult: 1, dmgTakenTurns: 0, dodgeTurns: 0, rarity: 'common', lvl: 1, name: 'Weak Target', avatar: '🎯', maxHp: 1, baseDmg: 0, currentHp: 1 }; assignEnemySkills(e); enemies.push(e); } 
         activeTargetIndex = 0; return; 
     }
 
@@ -2381,7 +2401,7 @@ function generateEnemies() {
     }
 
     if (currentMode === 'invasion') {
-        // Spawn up to invasionMaxOnScreen enemies (max 5), but only if total spawned < 10
+        // Spawn up to invasionMaxOnScreen enemies (max 4), but only if total spawned < 10
         let spawnCount = Math.min(invasionMaxOnScreen, invasionKillGoal - invasionSpawned);
         let pool = [...ENEMIES_DUNGEON, ...ENEMIES_PILLAGE];
         for(let i = 0; i < spawnCount; i++) {
@@ -2409,8 +2429,7 @@ function generateEnemies() {
         isBossFight = true; count = 1;
     } else {
         let countRoll = Math.random();
-        if(countRoll < 0.05) count = 5;
-        else if(countRoll < 0.15) count = 4;
+        if(countRoll < 0.15) count = 4;
         else if(countRoll < 0.35) count = 3;
         else if(countRoll < 0.65) count = 2;
         else count = 1;
@@ -2830,7 +2849,7 @@ function updateCombatUI() {
         eContainer.innerHTML = '';
         if(enemies[activeTargetIndex] && enemies[activeTargetIndex].currentHp <= 0) { activeTargetIndex = enemies.findIndex(e => e.currentHp > 0); if(activeTargetIndex === -1) activeTargetIndex = 0; }
 
-        enemies.forEach((e, idx) => {
+        enemies.slice(0, 4).forEach((e, idx) => {
             let isDead = e.currentHp <= 0; let isTarget = idx === activeTargetIndex && !isDead;
             let card = document.createElement('div'); card.id = `enemy-card-${idx}`;
             
@@ -2859,7 +2878,7 @@ function updateCombatUI() {
                 else if (idx === 1) { card.style.gridColumn = '2'; card.style.gridRow = '1'; }
                 else { card.style.gridColumn = '1 / -1'; card.style.gridRow = '2'; }
             } else {
-                avatarSizeClass = 'text-2xl'; nameSizeClass = 'text-[9px]'; bossLabelSizeClass = 'text-[8px]';
+                avatarSizeClass = 'text-3xl'; nameSizeClass = 'text-[10px]'; bossLabelSizeClass = 'text-[8px]';
             }
 
             card.className = `enemy-card bg-gray-800 p-1.5 rounded-lg cursor-pointer flex flex-col items-center overflow-hidden ${borderClass} ${isDead ? 'enemy-dead' : ''}`;
@@ -2881,7 +2900,7 @@ function updateCombatUI() {
             } else if (e.isBoss) {
                 bossLabel = `<div class="${bossLabelSizeClass} font-black text-yellow-200 bg-red-700 px-1.5 py-0.5 rounded-full shadow-lg mt-0.5 inline-block">👑 Boss</div>`;
             }
-            card.innerHTML = `<div class="relative w-full text-center"><div class="absolute -top-1 -right-2 text-sm flex gap-1">${eStatus}</div><div class="${avatarSizeClass} mb-1 mt-1 ${animClass}">${e.avatar}</div></div>${bossLabel}<div class="${nameSizeClass} font-bold truncate w-full text-center ${rarityColor}">Lv.${e.lvl} ${e.name}</div><div class="health-bar-container !h-1.5 !mt-1"><div class="health-bar" style="width: ${(Math.max(0, e.currentHp) / e.maxHp) * 100}%"></div></div>${isDead ? '<div class="enemy-death-overlay">💀</div>' : ''}`;
+            card.innerHTML = `<div class="relative w-full text-center"><div class="absolute -top-1 -right-2 text-sm flex gap-1">${eStatus}</div><div class="${avatarSizeClass} enemy-avatar mb-1 mt-1 ${animClass}">${e.avatar}</div></div>${bossLabel}<div class="${nameSizeClass} font-bold leading-tight break-words w-full text-center ${rarityColor}">Lv.${e.lvl} ${e.name}</div><div class="health-bar-container !h-1.5 !mt-1"><div class="health-bar" style="width: ${(Math.max(0, e.currentHp) / e.maxHp) * 100}%"></div></div>${isDead ? '<div class="enemy-death-overlay">💀</div>' : ''}`;
             eContainer.appendChild(card);
         });
         // Show Next Battle button when all enemies are dead and combat still active

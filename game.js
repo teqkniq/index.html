@@ -347,7 +347,7 @@ let activeDungeonTier = 1; let activeDungeonRoom = 1;
 let isPlayerTurn = true; let combatLog = []; let isAutoBattle = false; let combatActive = false; 
 let activeGraveyardBoss = null;
 // Invasion state
-let invasionTotalKills = 0; let invasionKillGoal = 10; let invasionMaxOnScreen = 5; let invasionSpawned = 0;
+let invasionTotalKills = 0; let invasionKillGoal = 10; let invasionMaxOnScreen = 4; let invasionSpawned = 0;
 // Pet battle state
 let petBattlePlayerPet = null; let petBattleEnemyPet = null; let petBattleActive = false;
 let petBattlePlayerHp = 10; let petBattleEnemyHp = 10; let petBattleLastAction = null; let petBattleEnemyLastAction = null;
