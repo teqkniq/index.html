@@ -2849,7 +2849,7 @@ function updateCombatUI() {
         eContainer.innerHTML = '';
         if(enemies[activeTargetIndex] && enemies[activeTargetIndex].currentHp <= 0) { activeTargetIndex = enemies.findIndex(e => e.currentHp > 0); if(activeTargetIndex === -1) activeTargetIndex = 0; }
 
-        const slotPositions = [{col:'1',row:'1'},{col:'2',row:'1'},{col:'1',row:'2'},{col:'2',row:'2'}];
+        const slotPositions = [{col:'2',row:'1'},{col:'1',row:'1'},{col:'1',row:'2'},{col:'2',row:'2'}];
         enemies.slice(0, 4).forEach((e, idx) => {
             let isDead = e.currentHp <= 0; let isTarget = idx === activeTargetIndex && !isDead;
             let card = document.createElement('div'); card.id = `enemy-card-${idx}`;
