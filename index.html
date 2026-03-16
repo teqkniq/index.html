@@ -707,11 +707,11 @@
             <h2 class="text-3xl font-bold mb-2 text-purple-400 text-center tracking-widest">THE ENCHANTER</h2>
             <p class="text-gray-400 mb-6 text-sm text-center">Use Enchanting Cores to permanently boost equipped gear. <br>Gear can only be enchanted <span class="text-white font-bold">once</span>!</p>
 
+            <div id="ench-core-merge" class="mb-6 flex flex-col gap-3">
+                <!-- Soul Core Fusion section populated by JS -->
+            </div>
             <div id="ench-list" class="flex flex-col gap-3">
                 <!-- Javascript populated list of equipped gear -->
-            </div>
-            <div id="ench-core-merge" class="mt-6 flex flex-col gap-3">
-                <!-- Soul Core Fusion section populated by JS -->
             </div>
         </div>
     </div>
@@ -774,8 +774,8 @@
             </div>
             <h2 class="text-3xl font-bold mb-4 text-gray-300 text-center tracking-widest">GENERAL SHOP</h2>
             
-            <div class="flex justify-between items-end mb-2 border-b border-gray-700 pb-1">
-                <h3 class="font-bold text-blue-400">Daily Equipment</h3>
+            <div class="flex justify-between items-center mb-2 border-b border-gray-700 pb-1">
+                <h3 class="font-bold text-blue-400 flex-1 text-center">Daily Equipment Sold</h3>
                 <button onclick="refreshShopGear()" class="text-xs bg-blue-800 hover:bg-blue-700 text-white px-2 py-1 rounded shadow-md border border-blue-600 transition active:scale-95">Refresh (20G)</button>
             </div>
             <div class="grid grid-cols-1 gap-2 mb-6" id="shop-gear-list"></div>
@@ -1095,6 +1095,17 @@
                     <h3 class="font-bold text-pink-300 mb-3 text-center">Choose Your Pet</h3>
                     <div id="pet-owned-list" class="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto"></div>
                     <p id="pet-no-pets-msg" class="text-gray-500 text-center py-4 text-sm hidden">No pets yet! Pets have a 5% drop chance in any game mode.</p>
+                </div>
+                <div class="bg-gray-900 border border-gray-700 rounded-xl p-4 mb-4">
+                    <h3 class="font-bold text-gray-300 mb-3 text-sm text-center uppercase tracking-widest">📖 How to Play</h3>
+                    <div class="text-xs text-gray-400 flex flex-col gap-1.5">
+                        <div><span class="text-white font-bold">🎯 Goal:</span> Reduce the enemy pet's HP from 10 to 0 to win the round.</div>
+                        <div><span class="text-red-400 font-bold">⚔️ Attack:</span> Small recoil vs Block (-0.5). Gets countered by Counter (-1 to you). <span class="text-green-400">No cooldown</span> — use every turn!</div>
+                        <div><span class="text-blue-400 font-bold">🛡️ Block:</span> Forces attacker recoil (-0.5), destroys Counter (-1.5 to them). <span class="text-yellow-400">1-turn cooldown</span> after use.</div>
+                        <div><span class="text-yellow-400 font-bold">🔄 Counter:</span> Intercepts Attacks (-1 to attacker), but loses hard to Block (-1.5 to you) and Attack if anticipated (-1 to you). <span class="text-yellow-400">1-turn cooldown</span> after use.</div>
+                        <div><span class="text-pink-400 font-bold">🏆 Rewards:</span> Win a round → +50 Gold &amp; +1% XP. Win streak tracked!</div>
+                        <div><span class="text-purple-400 font-bold">🐾 Pets:</span> 5% drop chance from any game mode.</div>
+                    </div>
                 </div>
                 <div class="bg-gray-900 border border-gray-700 rounded-xl p-4 mb-4">
                     <h3 class="font-bold text-gray-300 mb-2 text-sm text-center uppercase tracking-widest">Battle Rules</h3>
