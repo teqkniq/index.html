@@ -1883,13 +1883,13 @@ function petBattleAction(playerAction) {
 
         // Damage matrix
         if(playerAction === 'attack' && enemyAction === 'attack')   { playerDmg = 1; enemyDmg = 1; resultText = '⚔️ Both attacked! Both take 1 damage.'; }
-        else if(playerAction === 'attack' && enemyAction === 'block')   { playerDmg = 0.5; enemyDmg = 0; resultText = '⚔️ vs 🛡️ — Blocked! You take 0.5 recoil damage.'; }
-        else if(playerAction === 'attack' && enemyAction === 'counter') { playerDmg = 1; enemyDmg = 0; resultText = '⚔️ vs 🔄 — Attacker countered! You take 1 damage.'; }
-        else if(playerAction === 'block' && enemyAction === 'attack')   { playerDmg = 0; enemyDmg = 0.5; resultText = '🛡️ vs ⚔️ — Blocked! Enemy takes 0.5 recoil damage.'; }
+        else if(playerAction === 'attack' && enemyAction === 'block')   { playerDmg = 0.5; enemyDmg = 0; resultText = '⚔️ vs 🛡️ — Blocked! Attacker takes 0.5 damage.'; }
+        else if(playerAction === 'attack' && enemyAction === 'counter') { playerDmg = 0; enemyDmg = 1; resultText = '⚔️ vs 🔄 — Attack beats counter! Counter takes 1 damage.'; }
+        else if(playerAction === 'block' && enemyAction === 'attack')   { playerDmg = 0; enemyDmg = 1; resultText = '🛡️ vs ⚔️ — Block beats attack! Attacker takes 1 damage.'; }
         else if(playerAction === 'block' && enemyAction === 'block')    { playerDmg = 0.5; enemyDmg = 0.5; resultText = '🛡️ vs 🛡️ — Both blocked! Both take 0.5 damage.'; }
-        else if(playerAction === 'block' && enemyAction === 'counter')  { playerDmg = 0; enemyDmg = 1.5; resultText = '🛡️ vs 🔄 — Block beats counter! Counter takes 1.5 damage.'; }
-        else if(playerAction === 'counter' && enemyAction === 'attack') { playerDmg = 1; enemyDmg = 0; resultText = '🔄 vs ⚔️ — Counter interrupted! You take 1 damage.'; }
-        else if(playerAction === 'counter' && enemyAction === 'block')  { playerDmg = 1.5; enemyDmg = 0; resultText = '🔄 vs 🛡️ — Block beats counter! You take 1.5 damage.'; }
+        else if(playerAction === 'block' && enemyAction === 'counter')  { playerDmg = 0; enemyDmg = 1; resultText = '🛡️ vs 🔄 — Block beats counter! Counter takes 1 damage.'; }
+        else if(playerAction === 'counter' && enemyAction === 'attack') { playerDmg = 1; enemyDmg = 0; resultText = '🔄 vs ⚔️ — Counter loses to attack! Counter takes 1 damage.'; }
+        else if(playerAction === 'counter' && enemyAction === 'block')  { playerDmg = 1; enemyDmg = 0; resultText = '🔄 vs 🛡️ — Block beats counter! Counter takes 1 damage.'; }
         else if(playerAction === 'counter' && enemyAction === 'counter'){ playerDmg = 0.5; enemyDmg = 0.5; resultText = '🔄 vs 🔄 — Both countered! Both take 0.5 damage.'; }
 
         petBattlePlayerHp -= playerDmg;
